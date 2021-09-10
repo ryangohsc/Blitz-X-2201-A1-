@@ -17,17 +17,22 @@ def print_banner():
     """
     Prints a random banner
     """
-    random_char = random.choice(list(cowsay.char_names))
-    print(cowsay.get_output_string(random_char, "ICT2202 A1 Assignment by Team PanzerWerfer"))
+    print(" ######                              #     #")
+    print(" #     # #      # ##### ######        #   # ")
+    print(" #     # #      #   #       #          # #  ")
+    print(" ######  #      #   #      #   #####    #   ")
+    print(" #     # #      #   #     #            # #  ")
+    print(" #     # #      #   #    #            #   # ")
+    print(" ######  ###### #   #   ######       #     #")
 
 
 def main():
     """
     Main function
     """
-    print("-" * 80)
+    print("-" * 50)
     print_banner()
-    print("-" * 80)
+    print("-" * 50)
     get_prev_ran_prog()
 
 
