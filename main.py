@@ -23,7 +23,7 @@ def main():
     Main function
     """
     print_banner()
-    getServices()
+    get_prev_ran_prog()
 
 
 if __name__ == '__main__':
