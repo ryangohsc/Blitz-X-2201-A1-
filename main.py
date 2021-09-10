@@ -1,5 +1,7 @@
 import argparse
 from auxillary import *
+import cowsay
+import random
 
 # Argparser
 parser = argparse.ArgumentParser(
@@ -13,16 +15,19 @@ args = parser.parse_args()
 
 def print_banner():
     """
-    Prints the banner
+    Prints a random banner
     """
-    pass
+    random_char = random.choice(list(cowsay.char_names))
+    print(cowsay.get_output_string(random_char, "ICT2202 A1 Assignment by Team PanzerWerfer"))
 
 
 def main():
     """
     Main function
     """
+    print("-" * 80)
     print_banner()
+    print("-" * 80)
     get_prev_ran_prog()
 
 
