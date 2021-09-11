@@ -1,12 +1,12 @@
 import sys
-import os.path
+import os
 from winreg import *
 from Evtx.Evtx import FileHeader
 from Evtx.Views import evtx_file_xml_view
 
 
 # Drive Letter and Volume Name
-def known_usb():
+def get_known_usb():
     """
     Produces known USB devices from HKLM USBStor
     """
@@ -57,23 +57,40 @@ def get_portable_devices():
             print(friendly_name[0] + ": " + str(friendly_name[1]))
 
 
-# First/Last Times
-def get_first_last_times():
-    pass
+# Key Identification
+def get_usb_identification():
+    """
+    HKLM USB works in conjunction with get_known_usb() in analysis
+    """
+    # query = OpenKey(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Enum\USB', 0)
+    # for i in range(QueryInfoKey(query)[0]):
+
+
+# setupapi.dev.log
+def get_first_time_setup():
+    """
+    Gets first time setup log in setupapi.dev.log
+    """
+    winpath = os.environ["WINDIR"] + "\\INF\\"
+    log_file = open(winpath + "setupapi.dev.log", "r")
+    print(log_file.read())
+    log_file.close()
 
 
 # User
 def get_user():
-    pass
+    """
+    Gets the current user inserted USB devices
+    If the device GUID correlates to the keys in the user, it shows that the device is used by the current user
+    """
+    query = OpenKey(HKEY_CURRENT_USER, r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2', 0)
+    for i in range(QueryInfoKey(query)[0]):
+        list_guid = EnumKey(query, i)
+        print(list_guid)
 
 
 # Volume Serial Number
 def get_vol_sn():
-    pass
-
-
-# Key Identification
-def get_usb_identification():
     pass
 
 
