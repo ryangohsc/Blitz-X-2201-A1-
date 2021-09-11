@@ -13,42 +13,37 @@ def get_services():
     print(services)
 
 
-def enum_key(hive, subkey: str):
-    with OpenKey(hive, subkey, 0, KEY_ALL_ACCESS) as key:
-        num_of_values = QueryInfoKey(key)[1]
-        for i in range(num_of_values):
-            values = EnumValue(key, i)
-            if values[0] == "LangID": continue
-            print(*values[:-1], sep="\t")  # todo: edit
-
-
 def get_windows_version():
     try:
-        with ConnectRegistry(None, HKEY_LOCAL_MACHINE) as hklm_hive:
-            enum_key(hklm_hive, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion")
+        query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion", 0)
+        for i in range(QueryInfoKey(query)[1]):
+            print(EnumValue(query, i))
     except PermissionError:
         print("Unable to get Windows Version as this function requires Admin Rights")
 
 
 def get_system_env_var():
     try:
-        with ConnectRegistry(None, HKEY_LOCAL_MACHINE) as hklm_hive:
-            enum_key(hklm_hive, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+        query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", 0)
+        for i in range(QueryInfoKey(query)[1]):
+            print(EnumValue(query, i))
     except PermissionError:
-        print("Unable to get Windows Version as this function requires Admin Rights")
+        print("Unable to get System Environment Variables as this function requires Admin Rights")
 
 
 def get_start_up_apps():
     try:
-        with ConnectRegistry(None, HKEY_LOCAL_MACHINE) as hklm_hive:
-            enum_key(hklm_hive, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run")
+        query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", 0)
+        for i in range(QueryInfoKey(query)[1]):
+            print(EnumValue(query, i))
     except PermissionError:
-        print("Unable to get Windows Version as this function requires Admin Rights")
+        print("Unable to get Start Up Apps as this function requires Admin Rights")
 
 
 def get_prev_ran_prog():
     try:
-        with ConnectRegistry(None, HKEY_CURRENT_USER) as hkcu_hive:
-            enum_key(hkcu_hive, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache")
+        query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", 0)
+        for i in range(QueryInfoKey(query)[1]):
+            print(EnumValue(query, i))
     except PermissionError:
-        print("Unable to get Windows Version as this function requires Admin Rights")
+        print("Unable to get previously ran programs as this function requires Admin Rights")

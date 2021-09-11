@@ -1,7 +1,6 @@
 import argparse
 from auxillary import *
-import cowsay
-import random
+from external_device import *
 
 # Argparser
 parser = argparse.ArgumentParser(
@@ -15,7 +14,7 @@ args = parser.parse_args()
 
 def print_banner():
     """
-    Prints a random banner
+    Prints a banner
     """
     print(" ######                              #     #")
     print(" #     # #      # ##### ######        #   # ")
@@ -33,7 +32,7 @@ def main():
     print("-" * 50)
     print_banner()
     print("-" * 50)
-    get_prev_ran_prog()
+    get_portable_devices()
 
 
 if __name__ == '__main__':
