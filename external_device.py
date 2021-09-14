@@ -5,14 +5,25 @@ from Evtx.Views import evtx_file_xml_view
 import contextlib
 import mmap
 import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta
+
+WIN32_EPOCH = datetime(1601, 1, 1)
+
+
+def dt_from_win32_ts(timestamp):
+    return WIN32_EPOCH + timedelta(microseconds=timestamp // 10)
 
 
 def get_user_sid():
+    """
+    Returns a list user SIDs
+    """
     users = []
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList", 0)
     for i in range(QueryInfoKey(query)[0]):
         key = EnumKey(query, i)
-        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" + "\\" + key, 0)
+        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" + "\\" + key,
+                         0)
         profile = QueryValueEx(query2, "ProfileImagePath")[0].split("\\")
         user = [key, profile[len(profile) - 1]]
         users.append(user)
@@ -20,10 +31,13 @@ def get_user_sid():
 
 
 def get_user_by_sid(sid):
+    """
+    Returns the username using the specified SID
+    """
     users = get_user_sid()
     username = ""
     try:
-        for i in range(0, len(users)):
+        for i in range(len(users)):
             if users[i][0] == sid:
                 username = users[i][1]
     except WindowsError:
@@ -117,11 +131,47 @@ def get_user():
 
 # Volume Serial Number
 def get_vol_sn():
-    pass
+    """
+    Checks HKLM\EMDMgmt
+    Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
+    But still applicable to corporate devices nonetheless as of the time of writing.
+    """
+    try:
+        query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt", 0)
+        for i in range(QueryInfoKey(query)[0]):
+            list_device = EnumKey(query, i)
+            if not "_??_USBSTOR#Disk&" in list_device and not "_##_USBSTOR#Disk&" in list_device:
+                continue
+            if not "{53f56307-b6bf-11d0-94f2-00a0c91efb8b}" in list_device.lower():
+                continue
+            index = list_device.index("#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}")
+            usb_stor = list_device[0:index + 39]
+            usb_stor = usb_stor.replace("_??_USBSTOR#", "")
+            usb_stor = usb_stor.replace("_##_USBSTOR#", "")
+            if len(usb_stor) == 0:
+                continue
+            drive_info = list_device[index + 39:]
+            if "_" in drive_info:
+                vol_sn = drive_info[drive_info.rfind("_") + 1:]
+                vol_name = drive_info[0:drive_info.rfind("_")]
+                if len(vol_sn) > 0:
+                    vsn = int(vol_sn)
+                    hex_vol_sn = "%x" % vsn
+            query2 = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt" + "\\" + list_device, 0)
+            timestamp = QueryInfoKey(query2)[2]
+            timestamp = dt_from_win32_ts(timestamp)
+            timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            print(usb_stor)
+            print("Volume Serial Number: " + vol_sn + "\nVolume Name: " + vol_name + "\nVSN: " + hex_vol_sn + "\nLast Modified: " + timestamp)
+    except WindowsError:
+        print("Unable to find the registry key. EMDMgmt is probably not enabled by default.")
 
 
 # PnP Events
 def usb_activities():
+    """
+    Accesses the System event file and gets the specified EventID
+    """
     event_file = os.environ["WINDIR"] + "\\System32\\winevt\\logs\\System.evtx"
     with open(event_file, "r") as f:
         with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
@@ -129,8 +179,18 @@ def usb_activities():
             for xml, record in evtx_file_xml_view(fh):
                 root = ET.fromstring(xml)
                 if root[0][1].text == "20003" or root[0][1].text == "20001":
-                    print(root[0][7].get("SystemTime") + " EventID: " + root[0][1].text + " Computer: " + root[0][12].text + " User SID: " + root[0][13].get("UserID") + " User: " + get_user_by_sid(root[0][13].get("UserID")))
+                    print(root[0][7].get("SystemTime") + " EventID: " + root[0][1].text + " Computer: " + root[0][
+                        12].text + " User SID: " + root[0][13].get("UserID") + " User: " + get_user_by_sid(
+                        root[0][13].get("UserID")))
                     print("DriverFileName: " + root[1][0][1].text)
                     print("DeviceInstanceID: " + root[1][0][2].text)
                     print("AddServiceStatus: " + root[1][0][5].text + "\n")
                     # print(xml) #  This works too if want to print in XML format
+
+
+def run():
+    pass  # todo: fill in with all functions
+
+
+if __name__ == "__main__":
+    run()
