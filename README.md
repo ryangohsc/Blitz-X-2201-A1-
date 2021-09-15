@@ -1,1 +1,10 @@
-# 2202-A1
+# Blitz-X
+ICT2202 Digital Forensics Team Project Assignment 1
+
+## Objectives
+Blitz-X (Blitz-eXtractor) is a modular forensic triage tool written in Python designed to access various forensic artifacts on Windows relating to user data exfiltration. The tool will parse the artefacts, and present them in a format viable for analysis. The output may provide valuable insights during an incident response in a Windows environment while waiting for a full disk image. The tool is meant to be run on live systems on the offending User Account with administration rights.
+
+## Focused Areas
+* File/Folder Opening
+* External Device/USB Usage
+* Browser Usage
