@@ -75,11 +75,14 @@ def get_known_usb():
 def get_mounted_devices():
     """
     SYSTEM/MountedDevices
+    Compare mounted_devices_data with DosDevices.
+    Take Volume{...} compare with get_user() to see if user plugged in the USB
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
     for i in range(QueryInfoKey(query)[1]):
         mounted_devices = EnumValue(query, i)
-        print(mounted_devices[0] + ": " + str(mounted_devices[1]))
+        mounted_devices_data = mounted_devices[1].hex()
+        print(mounted_devices[0] + ": " + mounted_devices_data)
 
 
 def get_portable_devices():
@@ -97,13 +100,48 @@ def get_portable_devices():
             print(friendly_name[0] + ": " + str(friendly_name[1]))
 
 
+def cmp_usb_sn(arg_sn):
+    """
+    helper function do not include
+    """
+    query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
+    for i in range(QueryInfoKey(query)[0]):
+        device_name = EnumKey(query, i)
+        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name, 0)
+        for j in range(QueryInfoKey(query2)[0]):
+            serial_no = EnumKey(query2, j)
+            serial_no = serial_no[:-2]
+            if arg_sn == serial_no:
+                return arg_sn
+            else:
+                continue
+
+
 # Key Identification
 def get_usb_identification():
     """
-    HKLM USB works in conjunction with get_known_usb() in analysis
+    HKLM USB
+    Personally noticed that another PC registry only has this and no USBSTOR
+    Will cross check with USBSTOR serial no
     """
-    # query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
-    # for i in range(QueryInfoKey(query)[0]):
+    query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
+    for i in range(QueryInfoKey(query)[0]):
+        vid_pid = EnumKey(query, i)
+        if (not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower()):
+            continue
+        vid_pid_split = vid_pid.split("&")
+        usb_vid = vid_pid_split[0]
+        usb_pid = vid_pid_split[1]
+        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB" + "\\" + vid_pid, 0)
+        for i in range(QueryInfoKey(query2)[0]):
+            serial_key = EnumKey(query2, i)
+            usb_device = cmp_usb_sn(serial_key)
+            if usb_device is None:
+                continue
+            timestamp = QueryInfoKey(query2)[2]
+            timestamp = dt_from_win32_ts(timestamp)
+            timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            print("VID: " + usb_vid + "\nPID: " + usb_pid + "\nLast Modified: " + timestamp + "\n")
 
 
 # setupapi.dev.log
