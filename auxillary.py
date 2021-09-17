@@ -1,6 +1,17 @@
 from winreg import *
 import wmi
 from dateutil import tz
+from datetime import datetime, timedelta
+
+
+WIN32_EPOCH = datetime(1601, 1, 1)
+
+
+def dt_from_win32_ts(timestamp):
+    """
+    Converts registry key timestamps to UTC
+    """
+    return WIN32_EPOCH + timedelta(microseconds=timestamp // 10)
 
 
 def convert_time(args_utc):

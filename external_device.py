@@ -5,14 +5,7 @@ from Evtx.Views import evtx_file_xml_view
 import contextlib
 import mmap
 import xml.etree.ElementTree as ET
-from auxillary import convert_time
-from datetime import datetime, timedelta
-
-WIN32_EPOCH = datetime(1601, 1, 1)
-
-
-def dt_from_win32_ts(timestamp):
-    return WIN32_EPOCH + timedelta(microseconds=timestamp // 10)
+from auxillary import convert_time, dt_from_win32_ts
 
 
 def get_user_sid():
