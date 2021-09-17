@@ -1,5 +1,18 @@
 from winreg import *
 import wmi
+from dateutil import tz
+
+
+def convert_time(args_utc):
+    """
+    Converts UTC to the timezone of the system and returns it
+    """
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+    fmt = "%Y-%m-%dT%H:%M:%S.%f"
+    utc = args_utc.replace(tzinfo=from_zone)
+    convert_utc = utc.astimezone(to_zone).strftime(fmt)
+    return convert_utc
 
 
 def get_services():

@@ -5,6 +5,7 @@ from Evtx.Views import evtx_file_xml_view
 import contextlib
 import mmap
 import xml.etree.ElementTree as ET
+from auxillary import convert_time
 from datetime import datetime, timedelta
 
 WIN32_EPOCH = datetime(1601, 1, 1)
@@ -121,13 +122,12 @@ def cmp_usb_sn(arg_sn):
 def get_usb_identification():
     """
     HKLM USB
-    Personally noticed that another PC registry only has this and no USBSTOR
     Will cross check with USBSTOR serial no
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
     for i in range(QueryInfoKey(query)[0]):
         vid_pid = EnumKey(query, i)
-        if (not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower()):
+        if not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower():
             continue
         vid_pid_split = vid_pid.split("&")
         usb_vid = vid_pid_split[0]
@@ -140,7 +140,7 @@ def get_usb_identification():
                 continue
             timestamp = QueryInfoKey(query2)[2]
             timestamp = dt_from_win32_ts(timestamp)
-            timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            timestamp = convert_time(timestamp)
             print("VID: " + usb_vid + "\nPID: " + usb_pid + "\nLast Modified: " + timestamp + "\n")
 
 
@@ -170,7 +170,7 @@ def get_user():
 # Volume Serial Number
 def get_vol_sn():
     """
-    Checks HKLM\EMDMgmt
+    Checks HKLM\EMDMgmt (External Memory Device Management)
     Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
     But still applicable to corporate devices nonetheless as of the time of writing.
     """
@@ -195,12 +195,14 @@ def get_vol_sn():
                 if len(vol_sn) > 0:
                     vsn = int(vol_sn)
                     hex_vol_sn = "%x" % vsn
-            query2 = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt" + "\\" + list_device, 0)
+            query2 = OpenKey(HKEY_CURRENT_USER,
+                             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt" + "\\" + list_device, 0)
             timestamp = QueryInfoKey(query2)[2]
             timestamp = dt_from_win32_ts(timestamp)
-            timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            timestamp = convert_time(timestamp)
             print(usb_stor)
-            print("Volume Serial Number: " + vol_sn + "\nVolume Name: " + vol_name + "\nVSN: " + hex_vol_sn + "\nLast Modified: " + timestamp)
+            print(
+                "Volume Serial Number: " + vol_sn + "\nVolume Name: " + vol_name + "\nVSN: " + hex_vol_sn + "\nLast Modified: " + timestamp)
     except WindowsError:
         print("Unable to find the registry key. EMDMgmt is probably not enabled by default.")
 
@@ -227,7 +229,14 @@ def usb_activities():
 
 
 def run():
-    pass  # todo: fill in with all functions
+    get_known_usb()
+    get_mounted_devices()
+    get_portable_devices()
+    get_usb_identification()
+    get_first_time_setup()
+    get_user()
+    get_vol_sn()
+    usb_activities()
 
 
 if __name__ == "__main__":
