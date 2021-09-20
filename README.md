@@ -10,7 +10,7 @@ Blitz-X (Blitz-eXtractor) is a modular forensic triage tool written in Python de
 * Browser Usage
 
 ## Progress 
-☒ Research (DONE)
+☒ Research (DONE) \n
 ☐ Modules 
 ☐ Export to JSON
 ☐ Design analysis algorithm
