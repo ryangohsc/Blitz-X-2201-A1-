@@ -1,9 +1,20 @@
 import LnkParse3
 import os 
 import fnmatch
+import json
 
-WINDOWS_RECENT_LNK_FILES = '{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent'.format(os.environ['USERPROFILE'])
-OFFICE_RECENT_LNK_FILES = '{}\\AppData\\Roaming\\Microsoft\\Office\\Recent'.format(os.environ['USERPROFILE'])
+# Windows Lnk Files 
+WINDOWS_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent'.format(os.environ['USERPROFILE'])
+WINDOWS_TITLE = "Windows LNK Files"
+WINDOWS_DESCRIPTION = "This module parses the lnk files on the target system."
+WINDOWS_OUTFILE = "windows_lnk_files.json"
+
+# MS Office Lnk Files 
+OFFICE_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Office\\Recent'.format(os.environ['USERPROFILE'])
+OFFICE_TITLE = "Microsoft Office LNK Files"
+OFFICE_DESCRIPTION = "This moudle parses the office lnk files on the target system."
+OFFICE_OUTFILE = "ms_office_lnk_files.json"
+
 
 class Lnkfile:
 	def __init__(self):
@@ -15,11 +26,15 @@ class Lnkfile:
 		self.drive_type = None
 
 
-def parse_lnk_files(path, filename):
+def dump_to_json(file_path, data):
+	with open(file_path, 'w') as outfile:
+		json.dump(data, outfile, default=str) 
+
+
+def parse_lnk_files(path):
+	data = []
 	lnk_files = os.listdir(path)
 	lnk_files = fnmatch.filter(lnk_files, "*lnk")
-
-	file = open(filename,"w")
 	for lnk_file in lnk_files:
 		current_lnk_file = '{}\\{}'.format(path, lnk_file)
 		with open(current_lnk_file, 'rb') as indata:
@@ -57,19 +72,32 @@ def parse_lnk_files(path, filename):
 			except KeyError:
 				pass
 
-			line = "{}, {}, {}, {}, {}, {}\n".format(lnk_file_obj.local_base_path, \
-														lnk_file_obj.accessed_time, \
-														lnk_file_obj.creation_time, \
-														lnk_file_obj.modified_time, \
-														lnk_file_obj.drive_serial_no, \
-														lnk_file_obj.drive_type)
-			file.write(line)
+			if lnk_file_obj.local_base_path is None or lnk_file_obj.accessed_time is None:
+				pass 
+			else:
+				data.append({
+					'base_path'			: lnk_file_obj.local_base_path,
+					'accessed_time' 	: lnk_file_obj.accessed_time, 
+					'creation_time'		: lnk_file_obj.creation_time,
+					'modified_time' 	: lnk_file_obj.modified_time,
+					'drive_serial_no' 	: lnk_file_obj.drive_serial_no,
+					'drive_type' 		: lnk_file_obj.drive_type
+				})
+	return data
+
+
+def get_lnk_file_data(lnk_file_path, title, description, outfile):
+	data = parse_lnk_files(lnk_file_path)
+	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
+	data.insert(0, description)
+	data.insert(0, title)
+	dump_to_json(outfile, data)
 
 
 def run():
-	parse_lnk_files(WINDOWS_RECENT_LNK_FILES, 'lnkfile_microsoft.txt')
-	parse_lnk_files(OFFICE_RECENT_LNK_FILES, 'lnkfile_office.txt')
-
+	get_lnk_file_data(WINDOWS_LNK_FILE_PATH, WINDOWS_TITLE, WINDOWS_DESCRIPTION, WINDOWS_OUTFILE)
+	get_lnk_file_data(OFFICE_LNK_FILE_PATH, OFFICE_TITLE, OFFICE_DESCRIPTION, OFFICE_OUTFILE)
+	
 
 if __name__ == "__main__":
 	run()
