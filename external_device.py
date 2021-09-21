@@ -45,27 +45,30 @@ def get_known_usb():
     """
     Produces known USB devices from HKLM USBStor
     """
+    my_list = []
+    my_list.insert(0, "This module gets HKLM USBStor data from registry.")
+    my_list.insert(0, "Drive Letter & Volume Name")
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
-    my_dict = [{} for a in range(QueryInfoKey(query)[0])]
     for i in range(QueryInfoKey(query)[0]):
         device_name = EnumKey(query, i)
-        my_dict[i]["Device Name " + str(i)] = device_name
         query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name, 0)
         for j in range(QueryInfoKey(query2)[0]):
             serial_no = EnumKey(query2, j)
-            my_dict[j+i]["Serial " + str(j + i)] = serial_no
             query3 = OpenKey(HKEY_LOCAL_MACHINE,
                              r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name + "\\" + serial_no, 0)
             for x in range(QueryInfoKey(query3)[1]):
                 hardware_id = EnumValue(query3, x)
-                my_dict[j+i][hardware_id[0] + " " + str(j+i)] = str(hardware_id[1])
-            query4 = OpenKey(HKEY_LOCAL_MACHINE,
-                             r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name + "\\" + serial_no + "\Device Parameters\Partmgr",
-                             0)
-            for y in range(QueryInfoKey(query4)[1]):
-                partmgr = EnumValue(query4, y)
-                my_dict[j+i][partmgr[0] + " " + str(j+i)] = str(partmgr[1])
-        json_obj = json.dumps(my_dict, indent=4)
+                if hardware_id[0] == "FriendlyName":
+                    friendly_name = hardware_id[1]
+                if hardware_id[0] == "HardwareID":
+                    hwid = hardware_id[1]
+            my_list.append({
+                "name": str(device_name),
+                "serial": str(serial_no),
+                "friendlyname": friendly_name,
+                "HWID": hwid
+            })
+        json_obj = json.dumps(my_list, indent=4)
         with open("known_usb_raw.json", "w") as outfile:
             outfile.write(json_obj)
 
@@ -77,12 +80,17 @@ def get_mounted_devices():
     Take Volume{...} compare with get_user() to see if user plugged in the USB
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
-    my_dict = {}
+    my_list = []
+    my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
+    my_list.insert(0, "Mounted Devices")
     for i in range(QueryInfoKey(query)[1]):
         mounted_devices = EnumValue(query, i)
         mounted_devices_data = mounted_devices[1].hex()
-        my_dict[mounted_devices[0]] = str(mounted_devices_data)
-        json_obj = json.dumps(my_dict, indent=4)
+        my_list.append({
+            "name": str(mounted_devices[0]),
+            "data": str(mounted_devices_data)
+        })
+        json_obj = json.dumps(my_list, indent=4)
         with open("mounted_devices_raw.json", "w") as outfile:
             outfile.write(json_obj)
 
@@ -92,16 +100,20 @@ def get_portable_devices():
     HKLM Windows Portable Devices
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows Portable Devices\Devices", 0)
-    my_dict = [{} for a in range(QueryInfoKey(query)[0])]
+    my_list = []
+    my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
+    my_list.insert(0, "Windows Portable Devices")
     for i in range(QueryInfoKey(query)[0]):
         list_devices = EnumKey(query, i)
-        my_dict[i]["Device " + str(i)] = list_devices
         query2 = OpenKey(HKEY_LOCAL_MACHINE,
                          r"SOFTWARE\Microsoft\Windows Portable Devices\Devices" + "\\" + list_devices, 0)
         for y in range(QueryInfoKey(query2)[1]):
             friendly_name = EnumValue(query2, y)
-            my_dict[i][friendly_name[0] + " " + str(i)] = str(friendly_name[1])
-        json_obj = json.dumps(my_dict, indent=4)
+        my_list.append({
+            "name": str(list_devices),
+            "friendlyname": str(friendly_name)
+        })
+        json_obj = json.dumps(my_list, indent=4)
         with open("portable_devices_raw.json", "w") as outfile:
             outfile.write(json_obj)
 
@@ -130,7 +142,9 @@ def get_usb_identification():
     Will cross check with USBSTOR serial no
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
-    my_dict = [{} for a in range(QueryInfoKey(query)[0])]
+    my_list = []
+    my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor.")
+    my_list.insert(0, "USB")
     for i in range(QueryInfoKey(query)[0]):
         vid_pid = EnumKey(query, i)
         if not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower():
@@ -147,10 +161,12 @@ def get_usb_identification():
             timestamp = QueryInfoKey(query2)[2]
             timestamp = dt_from_win32_ts(timestamp)
             timestamp = convert_time(timestamp)
-            my_dict[i]["VID " + str(i)] = str(usb_vid)
-            my_dict[i]["PID " + str(i)] = str(usb_pid)
-            my_dict[i]["Last Modified " + str(i)] = str(timestamp)
-        json_obj = json.dumps(my_dict, indent=4)
+            my_list.append({
+                "vid": str(usb_vid),
+                "pid": str(usb_pid),
+                "last modified": str(timestamp)
+            })
+        json_obj = json.dumps(my_list, indent=4)
         with open("usb_identification_raw.json", "w") as outfile:
             outfile.write(json_obj)
 
@@ -160,10 +176,20 @@ def get_first_time_setup():
     """
     Gets first time setup log in setupapi.dev.log
     """
+    my_list = []
+    my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
+    my_list.insert(0, "First time setup")
     winpath = os.environ["WINDIR"] + "\\INF\\"
-    log_file = open(winpath + "setupapi.dev.log", "r")
-    print(log_file.read())
-    log_file.close()
+    with open(winpath + "setupapi.dev.log", "r") as log_file:
+        for line in log_file:
+            if "_??_USBSTOR#Disk&" in line or "_##_USBSTOR#Disk&" in line:
+                next_line = next(log_file)
+                my_list.append({
+                    "name": str(line),
+                    "time": str(next_line)
+                })
+                with open("first_time_setup_interest.json", 'w') as outfile:
+                    json.dump(my_list, outfile, default=str, indent=4)
 
 
 # User
@@ -173,11 +199,15 @@ def get_user():
     If the device GUID correlates to the keys in the user, it shows that the device is used by the current user
     """
     query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 0)
-    my_dict = {}
+    my_list = []
+    my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
+    my_list.insert(0, "MountPoints")
     for i in range(QueryInfoKey(query)[0]):
         list_guid = EnumKey(query, i)
-        my_dict["Device GUID" + " " + str(i)] = str(list_guid)
-        json_obj = json.dumps(my_dict, indent=4)
+        my_list.append({
+            "User GUID": str(list_guid)
+        })
+        json_obj = json.dumps(my_list, indent=4)
         with open("user_raw.json", "w") as outfile:
             outfile.write(json_obj)
 
@@ -189,9 +219,11 @@ def get_vol_sn():
     Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
     But still applicable to corporate devices nonetheless as of the time of writing.
     """
+    my_list = []
+    my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number.")
+    my_list.insert(0, "External Memory Device Management")
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt", 0)
-        my_dict = [{} for a in range(QueryInfoKey(query)[0])]
         for i in range(QueryInfoKey(query)[0]):
             list_device = EnumKey(query, i)
             if not "_??_USBSTOR#Disk&" in list_device and not "_##_USBSTOR#Disk&" in list_device:
@@ -216,16 +248,23 @@ def get_vol_sn():
             timestamp = QueryInfoKey(query2)[2]
             timestamp = dt_from_win32_ts(timestamp)
             timestamp = convert_time(timestamp)
-            my_dict[i]["Device Name " + str(i)] = usb_stor
-            my_dict[i]["Volume Serial Number " + str(i)] = str(vol_sn)
-            my_dict[i]["Volume Name " + str(i)] = str(vol_name)
-            my_dict[i]["VSN " + str(i)] = str(hex_vol_sn)
-            my_dict[i]["Last Modified " + str(i)] = str(timestamp)
-            json_obj = json.dumps(my_dict, indent=4)
+            my_list.append({
+                "device name": str(usb_stor),
+                "vol_sn": str(vol_sn),
+                "volume name": str(vol_name),
+                "vsn": str(hex_vol_sn),
+                "last modified": str(timestamp)
+            })
+            json_obj = json.dumps(my_list, indent=4)
             with open("vol_sn_emdmgmt_raw.json", "w") as outfile:
                 outfile.write(json_obj)
     except WindowsError:
-        print("Unable to find the registry key. EMDMgmt is probably not enabled by default.")
+        my_list.append({
+            "error": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
+        })
+        json_obj = json.dumps(my_list, indent=4)
+        with open("vol_sn_emdmgmt_raw.json", "w") as outfile:
+            outfile.write(json_obj)
 
 
 # PnP Events
@@ -237,16 +276,18 @@ def usb_activities():
     with open(event_file, "r") as f:
         with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
             fh = FileHeader(buf, 0x0)
-            for xml, record in evtx_file_xml_view(fh):
-                root = ET.fromstring(xml)
-                if root[0][1].text == "20003" or root[0][1].text == "20001":
-                    print(root[0][7].get("SystemTime") + " EventID: " + root[0][1].text + " Computer: " + root[0][
-                        12].text + " User SID: " + root[0][13].get("UserID") + " User: " + get_user_by_sid(
-                        root[0][13].get("UserID")))
-                    print("DriverFileName: " + root[1][0][1].text)
-                    print("DeviceInstanceID: " + root[1][0][2].text)
-                    print("AddServiceStatus: " + root[1][0][5].text + "\n")
-                    # print(xml) #  This works too if want to print in XML format
+            with open("test.xml", "w") as x:
+                for xml, record in evtx_file_xml_view(fh):
+                    root = ET.fromstring(xml)
+                    if root[0][1].text == "20003" or root[0][1].text == "20001":
+                        # print(root[0][7].get("SystemTime") + " EventID: " + root[0][1].text + " Computer: " + root[0][
+                        #    12].text + " User SID: " + root[0][13].get("UserID") + " User: " + get_user_by_sid(
+                        #    root[0][13].get("UserID")))
+                        # print("DriverFileName: " + root[1][0][1].text)
+                        # print("DeviceInstanceID: " + root[1][0][2].text)
+                        # print("AddServiceStatus: " + root[1][0][5].text + "\n")
+                        # print(xml)  # This works too if want to print in XML format
+                        x.write(xml)
 
 
 def run():
