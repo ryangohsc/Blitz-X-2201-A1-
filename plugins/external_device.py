@@ -51,9 +51,9 @@ def get_known_usb():
     """
     my_list = []
     title = "Drive Letter & Volume Name"
-    filename = Path(ROOT + "/data/usb/known_usb.json")
+    filename = Path(ROOT + "/data/usb/usb_known_usb.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/known_usb.html")
+    reportname = Path(ROOT + "/htmlreport/usb_known_usb.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USBStor data from registry.")
     my_list.insert(0, title)
@@ -92,9 +92,9 @@ def get_mounted_devices():
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
     title = "Mounted Devices"
     my_list = []
-    filename = Path(ROOT + "/data/usb/mounted_devices.json")
+    filename = Path(ROOT + "/data/usb/usb_mounted_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/mounted_devices.html")
+    reportname = Path(ROOT + "/htmlreport/usb_mounted_devices.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
     my_list.insert(0, title)
@@ -118,9 +118,9 @@ def get_portable_devices():
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows Portable Devices\Devices", 0)
     title = "Windows Portable Devices"
     my_list = []
-    filename = Path(ROOT + "/data/usb/portable_devices.json")
+    filename = Path(ROOT + "/data/usb/usb_portable_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/portable_devices.html")
+    reportname = Path(ROOT + "/htmlreport/usb_portable_devices.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
     my_list.insert(0, title)
@@ -206,9 +206,9 @@ def get_first_time_setup():
     """
     my_list = []
     title = "First Time Setup"
-    filename = Path(ROOT + "/data/usb/first_time_setup_interest.json")
+    filename = Path(ROOT + "/data/usb/usb_first_time_setup_interest.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/first_time_setup_interest.html")
+    reportname = Path(ROOT + "/htmlreport/usb_first_time_setup_interest.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
     my_list.insert(0, title)
@@ -236,9 +236,9 @@ def get_user():
     query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 0)
     title = "MountPoints"
     my_list = []
-    filename = Path(ROOT + "/data/usb/user.json")
+    filename = Path(ROOT + "/data/usb/usb_user.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/user.html")
+    reportname = Path(ROOT + "/htmlreport/usb_user.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
     my_list.insert(0, title)
@@ -262,9 +262,9 @@ def get_vol_sn():
     """
     title = "External Memory Device Management"
     my_list = []
-    filename = Path(ROOT + "/data/usb/vol_sn_emdmgmt.json")
+    filename = Path(ROOT + "/data/usb/usb_vol_sn_emdmgmt.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/vol_sn_emdmgmt.html")
+    reportname = Path(ROOT + "/htmlreport/usb_vol_sn_emdmgmt.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number.")
     my_list.insert(0, title)
@@ -322,9 +322,9 @@ def usb_activities():
     """
     title = "System event log"
     my_list = []
-    filename = Path(ROOT + "/data/usb/sys_event.json")
+    filename = Path(ROOT + "/data/usb/usb_sys_event.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/sys_event.html")
+    reportname = Path(ROOT + "/htmlreport/usb_sys_event.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets events from the system event.")
     my_list.insert(0, title)

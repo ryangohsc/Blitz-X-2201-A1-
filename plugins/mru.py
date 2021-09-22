@@ -11,8 +11,8 @@ from plugins.report import html_template
 TITLE = "MRU"
 ROOT = str(get_project_root())
 DESCRIPTION = "This module parses the MRU on the target system."
-OUTFILE = Path(ROOT + "/data/mru/mru.json")
-OUTREPORT = Path(ROOT + "/htmlreport/mru.html")
+OUTFILE = Path(ROOT + "/data/mru/file_activity_mru.json")
+OUTREPORT = Path(ROOT + "/htmlreport/file_activity_mru.html")
 
 
 class Mru:

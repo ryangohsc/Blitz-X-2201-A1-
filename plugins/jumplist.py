@@ -17,8 +17,8 @@ JUMPLISTS_DIRECTORY = r"{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent\\Automa
 TITLE = "Jumplist"
 DESCRIPTION = "This module parses the automatic jumplist files on the target system."
 ROOT = str(get_project_root())
-OUTFILE = Path(ROOT + "/data/jumplist/jumplist.json")
-OUTREPORT = Path(ROOT + "/htmlreport/jumplist.html")
+OUTFILE = Path(ROOT + "/data/jumplist/file_activity_jumplist.json")
+OUTREPORT = Path(ROOT + "/htmlreport/file_activity_jumplist.html")
 
 
 def dump_to_json(file_path, data):

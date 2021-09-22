@@ -12,15 +12,15 @@ ROOT = str(get_project_root())
 WINDOWS_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent'.format(os.environ['USERPROFILE'])
 WINDOWS_TITLE = "Windows LNK Files"
 WINDOWS_DESCRIPTION = "This module parses the lnk files on the target system."
-WINDOWS_OUTFILE = Path(ROOT + "/data/lnk_files/windows_lnk_files.json")
-WINDOWS_OUTREPORT = Path(ROOT + "/htmlreport/windows_lnk_files.html")
+WINDOWS_OUTFILE = Path(ROOT + "/data/lnk_files/file_activity_windows_lnk_files.json")
+WINDOWS_OUTREPORT = Path(ROOT + "/htmlreport/file_activity_windows_lnk_files.html")
 
 # MS Office Lnk Files 
 OFFICE_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Office\\Recent'.format(os.environ['USERPROFILE'])
 OFFICE_TITLE = "Microsoft Office LNK Files"
 OFFICE_DESCRIPTION = "This module parses the office lnk files on the target system."
-OFFICE_OUTFILE = Path(ROOT + "/data/lnk_files/ms_office_lnk_files.json")
-OFFICE_OUTREPORT = Path(ROOT + "/htmlreport/ms_office_lnk_files.html")
+OFFICE_OUTFILE = Path(ROOT + "/data/lnk_files/file_activity_ms_office_lnk_files.json")
+OFFICE_OUTREPORT = Path(ROOT + "/htmlreport/file_activity_ms_office_lnk_files.html")
 
 
 class Lnkfile:

@@ -2,6 +2,53 @@ from json2html import *
 import dominate
 from dominate.tags import *
 from dominate.util import raw
+from pathlib import Path
+
+
+def get_project_root():
+    """
+    Returns project root directory
+    """
+    return Path(__file__).parent.parent
+
+
+ROOT = str(get_project_root())
+
+
+def get_files():
+    """
+    Helper function to return all directories in working directory
+    """
+    directory_list = []
+    for a in Path(ROOT + "/htmlreport").iterdir():
+        if a.is_file():
+            directory_list.append(a.name)
+    return directory_list
+
+
+def homepage():
+    homepage_title = "Summary Page"
+    homepage_path = Path(ROOT + "/htmlreport/index.html")
+    doc = dominate.document(title=str(homepage_title))
+    nav_list = ["Misc", "External Device", "File/Folder Opening", "Other Plugins"]
+    menu_list = get_files()
+    with doc.head:
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        style("""\
+                    html {
+                        font-family: Verdana;
+                        font-size: 12px;
+                        max-width: 100%;
+                        overflow-x: hidden;
+                    }
+                    """)
+    with doc:
+        h1(homepage_title)
+        nav_bar = ul()
+        for item in nav_list:
+            nav_bar += li(a(item, href="#"))
+    with open(homepage_path, "w") as f:
+        f.write(doc.render(pretty=True))
 
 
 def html_template(args_title, args_path, args_json_obj):
@@ -52,7 +99,7 @@ def html_template(args_title, args_path, args_json_obj):
 
 
 def run():
-    pass
+    homepage()
 
 
 if __name__ == "__main__":

@@ -46,9 +46,9 @@ def get_services():
     c = wmi.WMI()
     title = "Windows Services"
     my_list = []
-    filename = Path(ROOT + "/data/misc/services.json")
+    filename = Path(ROOT + "/data/misc/misc_services.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/services.html")
+    reportname = Path(ROOT + "/htmlreport/misc_services.html")
     reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets currently installed services.")
     my_list.insert(0, title)
@@ -69,9 +69,9 @@ def get_windows_version():
     try:
         my_list = []
         title = "Windows Version"
-        filename = Path(ROOT + "/data/misc/winver.json")
+        filename = Path(ROOT + "/data/misc/misc_winver.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
-        reportname = Path(ROOT + "/htmlreport/winver.html")
+        reportname = Path(ROOT + "/htmlreport/misc_winver.html")
         reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets the winver from HKLM CurrentVersion from registry.")
         my_list.insert(0, title)
@@ -96,9 +96,9 @@ def get_system_env_var():
     try:
         my_list = []
         title = "System Environment Variables"
-        filename = Path(ROOT + "/data/misc/system_env.json")
+        filename = Path(ROOT + "/data/misc/misc_system_env.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
-        reportname = Path(ROOT + "/htmlreport/system_env.html")
+        reportname = Path(ROOT + "/htmlreport/misc_system_env.html")
         reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets system environment variables from current control set.")
         my_list.insert(0, title)
@@ -123,9 +123,9 @@ def get_start_up_apps():
     try:
         my_list = []
         title = "Startup Apps"
-        filename = Path(ROOT + "/data/misc/startup_apps.json")
+        filename = Path(ROOT + "/data/misc/misc_startup_apps.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
-        reportname = Path(ROOT + "/htmlreport/startup_apps.html")
+        reportname = Path(ROOT + "/htmlreport/misc_startup_apps.html")
         reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets startup applications from HKLM Run.")
         my_list.insert(0, title)
@@ -151,9 +151,9 @@ def get_prev_ran_prog():
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", 0)
         my_list = []
         title = "Previously Ran Programs"
-        filename = Path(ROOT + "/data/misc/prev_ran_programs.json")
+        filename = Path(ROOT + "/data/misc/misc_prev_ran_programs.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
-        reportname = Path(ROOT + "/htmlreport/startup_apps.html")
+        reportname = Path(ROOT + "/htmlreport/misc_startup_apps.html")
         reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets previously ran programs from HKCU MuiCache.")
         my_list.insert(0, title)
