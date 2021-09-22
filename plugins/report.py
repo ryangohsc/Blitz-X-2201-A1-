@@ -8,8 +8,7 @@ def html_template(args_title, args_path, args_json_obj):
     convert_json = json2html.convert(json=args_json_obj)
     convert_json = convert_json.replace("<ul>", "")
     convert_json = convert_json.replace("</ui>", "")
-    args_title = str(args_title)[:-5]
-    doc = dominate.document(title=args_title)
+    doc = dominate.document(title=str(args_title))
     with doc.head:
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         style("""\
@@ -17,7 +16,8 @@ def html_template(args_title, args_path, args_json_obj):
                 table-layout: fixed;
                 width: 100%;
                 border-collapse: collapse;
-                margin-bottom: 15px;
+                margin-top: 8px;
+                margin-bottom: 8px;
             }
             td {
                 width: 70%;

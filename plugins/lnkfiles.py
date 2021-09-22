@@ -2,18 +2,25 @@ import LnkParse3
 import os 
 import fnmatch
 import json
+from pathlib import Path
+from plugins.auxillary import get_project_root
+from plugins.report import html_template
+
+ROOT = str(get_project_root())
 
 # Windows Lnk Files 
 WINDOWS_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent'.format(os.environ['USERPROFILE'])
 WINDOWS_TITLE = "Windows LNK Files"
 WINDOWS_DESCRIPTION = "This module parses the lnk files on the target system."
-WINDOWS_OUTFILE = "./data/lnk_files/windows_lnk_files.json"
+WINDOWS_OUTFILE = Path(ROOT + "/data/lnk_files/windows_lnk_files.json")
+WINDOWS_OUTREPORT = Path(ROOT + "/htmlreport/windows_lnk_files.html")
 
 # MS Office Lnk Files 
 OFFICE_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Office\\Recent'.format(os.environ['USERPROFILE'])
 OFFICE_TITLE = "Microsoft Office LNK Files"
-OFFICE_DESCRIPTION = "This moudle parses the office lnk files on the target system."
-OFFICE_OUTFILE = "./data/lnk_files/ms_office_lnk_files.json"
+OFFICE_DESCRIPTION = "This module parses the office lnk files on the target system."
+OFFICE_OUTFILE = Path(ROOT + "/data/lnk_files/ms_office_lnk_files.json")
+OFFICE_OUTREPORT = Path(ROOT + "/htmlreport/ms_office_lnk_files.html")
 
 
 class Lnkfile:
@@ -26,9 +33,11 @@ class Lnkfile:
 		self.drive_type = None
 
 
-def dump_to_json(file_path, data):
+def dump_to_json(file_path, data, report_path, title):
+	json_obj = json.dumps(data, indent=4, default=str)
+	html_template(title, report_path, json_obj)
 	with open(file_path, 'w') as outfile:
-		json.dump(data, outfile, default=str, indent=4) 
+		outfile.write(json_obj)
 
 
 def parse_lnk_files(path, data, lnk_file):
@@ -83,7 +92,7 @@ def parse_lnk_files(path, data, lnk_file):
 	return data
 
 
-def get_lnk_file_data(lnk_file_path, title, description, outfile):
+def get_lnk_file_data(lnk_file_path, title, description, outfile, report_outfile):
 	data = []
 	lnk_files = os.listdir(lnk_file_path)
 	lnk_files = fnmatch.filter(lnk_files, "*lnk")	
@@ -92,12 +101,14 @@ def get_lnk_file_data(lnk_file_path, title, description, outfile):
 	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
 	data.insert(0, description)
 	data.insert(0, title)
-	dump_to_json(outfile, data)
+	dump_to_json(outfile, data, report_outfile, title)
 
 
 def run():
-	get_lnk_file_data(WINDOWS_LNK_FILE_PATH, WINDOWS_TITLE, WINDOWS_DESCRIPTION, WINDOWS_OUTFILE)
-	get_lnk_file_data(OFFICE_LNK_FILE_PATH, OFFICE_TITLE, OFFICE_DESCRIPTION, OFFICE_OUTFILE)
+	WINDOWS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+	OFFICE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+	get_lnk_file_data(WINDOWS_LNK_FILE_PATH, WINDOWS_TITLE, WINDOWS_DESCRIPTION, WINDOWS_OUTFILE, WINDOWS_OUTREPORT)
+	get_lnk_file_data(OFFICE_LNK_FILE_PATH, OFFICE_TITLE, OFFICE_DESCRIPTION, OFFICE_OUTFILE, OFFICE_OUTREPORT)
 	
 
 if __name__ == "__main__":

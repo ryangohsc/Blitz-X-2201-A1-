@@ -4,9 +4,17 @@ from dateutil import tz
 from datetime import datetime, timedelta
 import json
 from pathlib import Path
+from plugins.report import html_template
 
 
 WIN32_EPOCH = datetime(1601, 1, 1)
+
+
+def get_project_root():
+    """
+    Returns project root directory
+    """
+    return Path(__file__).parent.parent
 
 
 def dt_from_win32_ts(timestamp):
@@ -28,21 +36,28 @@ def convert_time(args_utc):
     return convert_utc
 
 
+ROOT = str(get_project_root())
+
+
 def get_services():
     """
     Displays all services installed
     """
     c = wmi.WMI()
+    title = "Windows Services"
     my_list = []
-    filename = Path("data/misc/services.json")
+    filename = Path(ROOT + "/data/misc/services.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
+    reportname = Path(ROOT + "/htmlreport/services.html")
+    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets currently installed services.")
-    my_list.insert(0, "Services")
+    my_list.insert(0, title)
     for service in c.Win32_Service():
         my_list.append({
             "service": str(service.DisplayName),
         })
     json_obj = json.dumps(my_list, indent=4)
+    html_template(title, reportname, json_obj)
     with open(filename, "w") as outfile:
         outfile.write(json_obj)
 
@@ -53,10 +68,13 @@ def get_windows_version():
     """
     try:
         my_list = []
-        filename = Path("data/misc/winver.json")
+        title = "Windows Version"
+        filename = Path(ROOT + "/data/misc/winver.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
+        reportname = Path(ROOT + "/htmlreport/winver.html")
+        reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets the winver from HKLM CurrentVersion from registry.")
-        my_list.insert(0, "Windows Version")
+        my_list.insert(0, title)
         query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion", 0)
         for i in range(QueryInfoKey(query)[1]):
             name = EnumValue(query, i)
@@ -64,6 +82,7 @@ def get_windows_version():
                 str(name[0]): str(name[1])
             })
         json_obj = json.dumps(my_list, indent=4)
+        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
             outfile.write(json_obj)
     except PermissionError:
@@ -76,10 +95,13 @@ def get_system_env_var():
     """
     try:
         my_list = []
-        filename = Path("data/misc/system_env.json")
+        title = "System Environment Variables"
+        filename = Path(ROOT + "/data/misc/system_env.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
+        reportname = Path(ROOT + "/htmlreport/system_env.html")
+        reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets system environment variables from current control set.")
-        my_list.insert(0, "System Environment Variables")
+        my_list.insert(0, title)
         query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", 0)
         for i in range(QueryInfoKey(query)[1]):
             name = EnumValue(query, i)
@@ -87,6 +109,7 @@ def get_system_env_var():
                 str(name[0]): str(name[1])
             })
             json_obj = json.dumps(my_list, indent=4)
+            html_template(title, reportname, json_obj)
             with open(filename, "w") as outfile:
                 outfile.write(json_obj)
     except PermissionError:
@@ -99,10 +122,13 @@ def get_start_up_apps():
     """
     try:
         my_list = []
-        filename = Path("data/misc/startup_apps.json")
+        title = "Startup Apps"
+        filename = Path(ROOT + "/data/misc/startup_apps.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
+        reportname = Path(ROOT + "/htmlreport/startup_apps.html")
+        reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets startup applications from HKLM Run.")
-        my_list.insert(0, "Startup Apps")
+        my_list.insert(0, title)
         query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", 0)
         for i in range(QueryInfoKey(query)[1]):
             name = EnumValue(query, i)
@@ -110,6 +136,7 @@ def get_start_up_apps():
                 str(name[0]): str(name[1])
             })
             json_obj = json.dumps(my_list, indent=4)
+            html_template(title, reportname, json_obj)
             with open(filename, "w") as outfile:
                 outfile.write(json_obj)
     except PermissionError:
@@ -123,10 +150,13 @@ def get_prev_ran_prog():
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", 0)
         my_list = []
-        filename = Path("data/misc/prev_ran_programs.json")
+        title = "Previously Ran Programs"
+        filename = Path(ROOT + "/data/misc/prev_ran_programs.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
+        reportname = Path(ROOT + "/htmlreport/startup_apps.html")
+        reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets previously ran programs from HKCU MuiCache.")
-        my_list.insert(0, "Previously Ran Programs")
+        my_list.insert(0, title)
         for i in range(QueryInfoKey(query)[1]):
             name = EnumValue(query, i)
             if name[0] == "LangID":
@@ -135,6 +165,7 @@ def get_prev_ran_prog():
                 str(name[0]): str(name[1])
             })
             json_obj = json.dumps(my_list, indent=4)
+            html_template(title, reportname, json_obj)
             with open(filename, "w") as outfile:
                 outfile.write(json_obj)
     except PermissionError:
