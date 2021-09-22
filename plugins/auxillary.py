@@ -34,7 +34,7 @@ def get_services():
     """
     c = wmi.WMI()
     my_list = []
-    filename = Path("misc/services.json")
+    filename = Path("data/misc/services.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets currently installed services.")
     my_list.insert(0, "Services")
@@ -48,9 +48,12 @@ def get_services():
 
 
 def get_windows_version():
+    """
+    Gets the Windows Version of the installation
+    """
     try:
         my_list = []
-        filename = Path("misc/winver.json")
+        filename = Path("data/misc/winver.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets the winver from HKLM CurrentVersion from registry.")
         my_list.insert(0, "Windows Version")
@@ -68,9 +71,12 @@ def get_windows_version():
 
 
 def get_system_env_var():
+    """
+    Gets the system environment variables
+    """
     try:
         my_list = []
-        filename = Path("misc/system_env.json")
+        filename = Path("data/misc/system_env.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets system environment variables from current control set.")
         my_list.insert(0, "System Environment Variables")
@@ -88,9 +94,12 @@ def get_system_env_var():
 
 
 def get_start_up_apps():
+    """
+    Get start up applications from the registry
+    """
     try:
         my_list = []
-        filename = Path("misc/startup_apps.json")
+        filename = Path("data/misc/startup_apps.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets startup applications from HKLM Run.")
         my_list.insert(0, "Startup Apps")
@@ -108,10 +117,13 @@ def get_start_up_apps():
 
 
 def get_prev_ran_prog():
+    """
+    Gets previously ran programs from the registry
+    """
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", 0)
         my_list = []
-        filename = Path("misc/prev_ran_programs.json")
+        filename = Path("data/misc/prev_ran_programs.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets previously ran programs from HKCU MuiCache.")
         my_list.insert(0, "Previously Ran Programs")
