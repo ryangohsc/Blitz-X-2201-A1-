@@ -5,19 +5,19 @@ import json
 RUN_ONCE_KEY = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
 RUN_ONCE_TITLE =  "RunOnce Registry Data"
 RUN_ONCE_DESCRIPTION = "This module parses the run once regkey on the target system."
-RUN_ONCE_OUTFILE = "./data/run_once.json"
+RUN_ONCE_OUTFILE = "./data/reg_activity/run_once.json"
 
 # Run 
 RUN_KEY = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
 RUN_TITLE =  "Run Registry Data"
 RUN_DESCRIPTION = "This module parses the run regkey on the target system."
-RUN_OUTFILE = "./data/run.json"
+RUN_OUTFILE = "./data/reg_activity/run.json"
 
 # Typed Paths
 TYPED_PATH_KEY = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths"
 TYPED_PATH_TITLE = "Typed Paths Data"
 TYPED_PATH_DESCRIPTION = "This module parses the Typed Paths Reg key on the target system."
-TYPED_PATH_OUTFILE = "./data/typed_paths.json"
+TYPED_PATH_OUTFILE = "./data/reg_activity/typed_paths.json"
  
 
 def dump_to_json(file_path, data):

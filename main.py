@@ -5,7 +5,7 @@ import importlib
 import sys
 
 PLUGIN_PATH = "plugins"
-EXCLUDED_PLUGINS = ['auxillary.py']
+EXCLUDED_PLUGINS = []
 
 # Argparser
 parser = argparse.ArgumentParser(
@@ -22,14 +22,15 @@ def load_plugins():
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
     plugins = fnmatch.filter(plugins, "*py") 
-    print("[+] Loading modules....")
+    print("[+] Loading plugins....")
     for plugin in plugins:
         print(plugin)
-    print("\n[!] Modules successfully loaded!")
+    print("\n[+] Plugins successfully loaded!")
     return plugin_path, plugins
 
 
 def run_plugins(plugin_path, plugins):
+    print("\n[+] Running plugins!")
     for plugin in plugins:
         if plugin in EXCLUDED_PLUGINS:
             pass        
@@ -38,7 +39,7 @@ def run_plugins(plugin_path, plugins):
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
             module.run()
-    print("\n[!] Modules successfully executed!")
+    print("\n[!] Plugins successfully executed!")
         
         
 def print_banner():

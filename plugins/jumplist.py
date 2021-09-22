@@ -13,7 +13,7 @@ CURRENT_USER_PROFILE = os.environ['USERPROFILE']
 JUMPLISTS_DIRECTORY = r"{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent\\AutomaticDestinations".format(CURRENT_USER_PROFILE)
 TITLE = "Jumplist"
 DESCRIPTION = "This moudle parses the automatic jumplist files on the target system."
-OUTFILE = "./data/jumplist.json"
+OUTFILE = "./data/jumplist/jumplist.json"
 
 
 def dump_to_json(file_path, data):
