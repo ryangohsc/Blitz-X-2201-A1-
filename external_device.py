@@ -7,6 +7,7 @@ import mmap
 import xml.etree.ElementTree as ET
 from auxillary import convert_time, dt_from_win32_ts
 import json
+from pathlib import Path
 
 
 def get_user_sid():
@@ -46,6 +47,8 @@ def get_known_usb():
     Produces known USB devices from HKLM USBStor
     """
     my_list = []
+    filename = Path("usb/known_usb.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USBStor data from registry.")
     my_list.insert(0, "Drive Letter & Volume Name")
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
@@ -69,7 +72,7 @@ def get_known_usb():
                 "HWID": hwid
             })
         json_obj = json.dumps(my_list, indent=4)
-        with open("known_usb_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -81,6 +84,8 @@ def get_mounted_devices():
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
     my_list = []
+    filename = Path("usb/mounted_devices.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
     my_list.insert(0, "Mounted Devices")
     for i in range(QueryInfoKey(query)[1]):
@@ -91,7 +96,7 @@ def get_mounted_devices():
             "data": str(mounted_devices_data)
         })
         json_obj = json.dumps(my_list, indent=4)
-        with open("mounted_devices_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -101,6 +106,8 @@ def get_portable_devices():
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows Portable Devices\Devices", 0)
     my_list = []
+    filename = Path("usb/portable_devices.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
     my_list.insert(0, "Windows Portable Devices")
     for i in range(QueryInfoKey(query)[0]):
@@ -114,7 +121,7 @@ def get_portable_devices():
             "friendlyname": str(friendly_name)
         })
         json_obj = json.dumps(my_list, indent=4)
-        with open("portable_devices_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -143,6 +150,8 @@ def get_usb_identification():
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
     my_list = []
+    filename = Path("usb/usb_identification.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor.")
     my_list.insert(0, "USB")
     for i in range(QueryInfoKey(query)[0]):
@@ -167,7 +176,7 @@ def get_usb_identification():
                 "last modified": str(timestamp)
             })
         json_obj = json.dumps(my_list, indent=4)
-        with open("usb_identification_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -177,6 +186,8 @@ def get_first_time_setup():
     Gets first time setup log in setupapi.dev.log
     """
     my_list = []
+    filename = Path("usb/first_time_setup_interest.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
     my_list.insert(0, "First time setup")
     winpath = os.environ["WINDIR"] + "\\INF\\"
@@ -188,7 +199,7 @@ def get_first_time_setup():
                     "name": str(line),
                     "time": str(next_line)
                 })
-                with open("first_time_setup_interest.json", 'w') as outfile:
+                with open(filename, 'w') as outfile:
                     json.dump(my_list, outfile, default=str, indent=4)
 
 
@@ -200,15 +211,17 @@ def get_user():
     """
     query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 0)
     my_list = []
+    filename = Path("usb/user.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
     my_list.insert(0, "MountPoints")
     for i in range(QueryInfoKey(query)[0]):
         list_guid = EnumKey(query, i)
         my_list.append({
-            "User GUID": str(list_guid)
+            "Device GUID": str(list_guid)
         })
         json_obj = json.dumps(my_list, indent=4)
-        with open("user_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -220,6 +233,8 @@ def get_vol_sn():
     But still applicable to corporate devices nonetheless as of the time of writing.
     """
     my_list = []
+    filename = Path("usb/vol_sn_emdmgmt.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number.")
     my_list.insert(0, "External Memory Device Management")
     try:
@@ -256,14 +271,14 @@ def get_vol_sn():
                 "last modified": str(timestamp)
             })
             json_obj = json.dumps(my_list, indent=4)
-            with open("vol_sn_emdmgmt_raw.json", "w") as outfile:
+            with open(filename, "w") as outfile:
                 outfile.write(json_obj)
     except WindowsError:
         my_list.append({
             "error": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
         })
         json_obj = json.dumps(my_list, indent=4)
-        with open("vol_sn_emdmgmt_raw.json", "w") as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(json_obj)
 
 
@@ -272,22 +287,31 @@ def usb_activities():
     """
     Accesses the System event file and gets the specified EventID
     """
+    my_list = []
+    filename = Path("usb/sys_event.json")
+    filename.parent.mkdir(exist_ok=True, parents=True)
+    my_list.insert(0, "This module gets events from the system event.")
+    my_list.insert(0, "System event log")
     event_file = os.environ["WINDIR"] + "\\System32\\winevt\\logs\\System.evtx"
     with open(event_file, "r") as f:
         with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
             fh = FileHeader(buf, 0x0)
-            with open("test.xml", "w") as x:
-                for xml, record in evtx_file_xml_view(fh):
-                    root = ET.fromstring(xml)
-                    if root[0][1].text == "20003" or root[0][1].text == "20001":
-                        # print(root[0][7].get("SystemTime") + " EventID: " + root[0][1].text + " Computer: " + root[0][
-                        #    12].text + " User SID: " + root[0][13].get("UserID") + " User: " + get_user_by_sid(
-                        #    root[0][13].get("UserID")))
-                        # print("DriverFileName: " + root[1][0][1].text)
-                        # print("DeviceInstanceID: " + root[1][0][2].text)
-                        # print("AddServiceStatus: " + root[1][0][5].text + "\n")
-                        # print(xml)  # This works too if want to print in XML format
-                        x.write(xml)
+            for xml, record in evtx_file_xml_view(fh):
+                root = ET.fromstring(xml)
+                if root[0][1].text == "20003" or root[0][1].text == "20001":
+                    my_list.append({
+                        "eventid": root[0][1].text,
+                        "computer": root[0][12].text,
+                        "usersid": root[0][13].get("UserID"),
+                        "user": get_user_by_sid(root[0][13].get("UserID")),
+                        "driverfilename": root[1][0][1].text,
+                        "deviceinstanceid": root[1][0][2].text,
+                        "addservicestatus": root[1][0][5].text,
+                        "timestamp": root[0][7].get("SystemTime")
+                    })
+                    json_obj = json.dumps(my_list, indent=4)
+                    with open(filename, "w") as outfile:
+                        outfile.write(json_obj)
 
 
 def run():
