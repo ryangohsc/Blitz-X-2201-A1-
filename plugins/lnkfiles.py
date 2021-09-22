@@ -7,13 +7,13 @@ import json
 WINDOWS_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent'.format(os.environ['USERPROFILE'])
 WINDOWS_TITLE = "Windows LNK Files"
 WINDOWS_DESCRIPTION = "This module parses the lnk files on the target system."
-WINDOWS_OUTFILE = "windows_lnk_files.json"
+WINDOWS_OUTFILE = "./data/windows_lnk_files.json"
 
 # MS Office Lnk Files 
 OFFICE_LNK_FILE_PATH = r'{}\\AppData\\Roaming\\Microsoft\\Office\\Recent'.format(os.environ['USERPROFILE'])
 OFFICE_TITLE = "Microsoft Office LNK Files"
 OFFICE_DESCRIPTION = "This moudle parses the office lnk files on the target system."
-OFFICE_OUTFILE = "ms_office_lnk_files.json"
+OFFICE_OUTFILE = "./data/ms_office_lnk_files.json"
 
 
 class Lnkfile:

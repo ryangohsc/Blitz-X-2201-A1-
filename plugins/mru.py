@@ -7,7 +7,7 @@ import fnmatch
 
 TITLE = "MRU"
 DESCRIPTION = "This moudle parses the MRU on the target system."
-OUTFILE = "mru.json"
+OUTFILE = "./data/mru.json"
 
 class Mru:
 	def __init__(self):

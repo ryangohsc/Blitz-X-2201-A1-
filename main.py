@@ -38,6 +38,7 @@ def run_plugins(plugin_path, plugins):
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
             module.run()
+    print("\n[!] Modules successfully executed!")
         
         
 def print_banner():
