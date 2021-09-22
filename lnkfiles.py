@@ -28,66 +28,67 @@ class Lnkfile:
 
 def dump_to_json(file_path, data):
 	with open(file_path, 'w') as outfile:
-		json.dump(data, outfile, default=str) 
+		json.dump(data, outfile, default=str, indent=4) 
 
 
-def parse_lnk_files(path):
-	data = []
-	lnk_files = os.listdir(path)
-	lnk_files = fnmatch.filter(lnk_files, "*lnk")
-	for lnk_file in lnk_files:
-		current_lnk_file = '{}\\{}'.format(path, lnk_file)
-		with open(current_lnk_file, 'rb') as indata:
-			lnk_file_obj = Lnkfile()
-			lnk_meta = LnkParse3.lnk_file(indata)
-			json_format = lnk_meta.get_json()
+def parse_lnk_files(path, data, lnk_file):
+	current_lnk_file = '{}\\{}'.format(path, lnk_file)
+	with open(current_lnk_file, 'rb') as indata:
+		lnk_file_obj = Lnkfile()
+		lnk_meta = LnkParse3.lnk_file(indata)
+		json_format = lnk_meta.get_json()
 
-			try:
-				lnk_file_obj.local_base_path = json_format['link_info']['local_base_path']
-			except KeyError:
-				pass
+		try:
+			lnk_file_obj.local_base_path = json_format['link_info']['local_base_path']
+		except KeyError:
+			pass
 
-			try:
-				lnk_file_obj.accessed_time = json_format['header']['accessed_time']
-			except KeyError:
-				pass
+		try:
+			lnk_file_obj.accessed_time = json_format['header']['accessed_time']
+		except KeyError:
+			pass
 
-			try:
-				lnk_file_obj.creation_time = json_format['header']['creation_time']
-			except KeyError:
-				pass
+		try:
+			lnk_file_obj.creation_time = json_format['header']['creation_time']
+		except KeyError:
+			pass
 
-			try:
-				lnk_file_obj.modified_time = json_format['header']['modified_time']
-			except KeyError:
-				pass
+		try:
+			lnk_file_obj.modified_time = json_format['header']['modified_time']
+		except KeyError:
+			pass
 
-			try:
-				lnk_file_obj.drive_serial_number = json_format['link_info']['location_info']['drive_serial_number']
-			except KeyError:
-				pass 
+		try:
+			lnk_file_obj.drive_serial_number = json_format['link_info']['location_info']['drive_serial_number']
+		except KeyError:
+			pass 
 
-			try:
-				lnk_file_obj.drive_type = json_format['link_info']['location_info']['drive_type']
-			except KeyError:
-				pass
+		try:
+			lnk_file_obj.drive_type = json_format['link_info']['location_info']['drive_type']
+		except KeyError:
+			pass
 
-			if lnk_file_obj.local_base_path is None or lnk_file_obj.accessed_time is None:
-				pass 
-			else:
-				data.append({
-					'base_path'			: lnk_file_obj.local_base_path,
-					'accessed_time' 	: lnk_file_obj.accessed_time, 
-					'creation_time'		: lnk_file_obj.creation_time,
-					'modified_time' 	: lnk_file_obj.modified_time,
-					'drive_serial_no' 	: lnk_file_obj.drive_serial_no,
-					'drive_type' 		: lnk_file_obj.drive_type
-				})
+		if lnk_file_obj.local_base_path is None or lnk_file_obj.accessed_time is None:
+			pass 
+			
+		else:
+			data.append({
+				'base_path'			: lnk_file_obj.local_base_path,
+				'accessed_time' 	: lnk_file_obj.accessed_time, 
+				'creation_time'		: lnk_file_obj.creation_time,
+				'modified_time' 	: lnk_file_obj.modified_time,
+				'drive_serial_no' 	: lnk_file_obj.drive_serial_no,
+				'drive_type' 		: lnk_file_obj.drive_type
+			})
 	return data
 
 
 def get_lnk_file_data(lnk_file_path, title, description, outfile):
-	data = parse_lnk_files(lnk_file_path)
+	data = []
+	lnk_files = os.listdir(lnk_file_path)
+	lnk_files = fnmatch.filter(lnk_files, "*lnk")	
+	for lnk_file in lnk_files:
+		parse_lnk_files(lnk_file_path, data, lnk_file)
 	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
 	data.insert(0, description)
 	data.insert(0, title)

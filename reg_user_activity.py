@@ -18,11 +18,11 @@ TYPED_PATH_KEY = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Typed
 TYPED_PATH_TITLE = "Typed Paths Data"
 TYPED_PATH_DESCRIPTION = "This module parses the Typed Paths Reg key on the target system."
 TYPED_PATH_OUTFILE = "typed_paths.json"
-
+ 
 
 def dump_to_json(file_path, data):
 	with open(file_path, 'w') as outfile:
-		json.dump(data, outfile, default=str) 
+		json.dump(data, outfile, default=str, indent=4) 
 
 
 def get_reg_key_data(reg_key, title, description, outfile):

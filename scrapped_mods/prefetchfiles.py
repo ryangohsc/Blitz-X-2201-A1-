@@ -23,7 +23,7 @@ class FileMetaData:
 
 def dump_to_json(file_path, data):
 	with open(file_path, 'w') as outfile:
-		json.dump(data, outfile, default=str) 
+		json.dump(data, outfile, default=str, indent=4) 
 
 
 def get_file_metadata(directory):

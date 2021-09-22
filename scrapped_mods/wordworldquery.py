@@ -53,7 +53,11 @@ def enum_wordwheel_regkey(reg_key):
 
 def run():
 	data, mru_list_order = enum_wordwheel_regkey(REG_KEY) 
-	write_to_json(data, mru_list_order)
+	print(mru_list_order)
+	print(data)
+
+
+	# write_to_json(data, mru_list_order)
 
 
 if __name__ == "__main__":
