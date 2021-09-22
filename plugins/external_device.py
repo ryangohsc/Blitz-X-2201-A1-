@@ -307,7 +307,7 @@ def get_vol_sn():
                 outfile.write(json_obj)
     except WindowsError:
         my_list.append({
-            "error": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
+            "not found": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
         })
         json_obj = json.dumps(my_list, indent=4)
         html_template(title, reportname, json_obj)

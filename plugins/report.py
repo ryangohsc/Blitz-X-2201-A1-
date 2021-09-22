@@ -3,6 +3,8 @@ import dominate
 from dominate.tags import *
 from dominate.util import raw
 from pathlib import Path
+import glob
+import os
 
 
 def get_project_root():
@@ -15,23 +17,29 @@ def get_project_root():
 ROOT = str(get_project_root())
 
 
-def get_files():
+def get_files(path, arg_name):
     """
     Helper function to return all directories in working directory
     """
-    directory_list = []
-    for a in Path(ROOT + "/htmlreport").iterdir():
-        if a.is_file():
-            directory_list.append(a.name)
-    return directory_list
+    result = []
+    for name in glob.iglob(path + arg_name):
+        name = os.path.basename(name)
+        result.append(name)
+    return result
 
 
 def homepage():
-    homepage_title = "Summary Page"
+    homepage_title = "Blitz-X Home Page"
     homepage_path = Path(ROOT + "/htmlreport/index.html")
     doc = dominate.document(title=str(homepage_title))
-    nav_list = ["Misc", "External Device", "File/Folder Opening", "Other Plugins"]
-    menu_list = get_files()
+    misc_menu_list = get_files(str(Path(ROOT + "/htmlreport/")), "/misc*")
+    usb_menu_list = get_files(str(Path(ROOT + "/htmlreport/")), "/usb*")
+    file_menu_list = get_files(str(Path(ROOT + "/htmlreport/")), "/file_activity*")
+    others_menu_list = get_files(str(Path(ROOT + "/htmlreport/")), "/*")
+    others_menu_list = [m for m in others_menu_list if m not in misc_menu_list]
+    others_menu_list = [m for m in others_menu_list if m not in usb_menu_list]
+    others_menu_list = [m for m in others_menu_list if m not in file_menu_list]
+    others_menu_list.remove("index.html")
     with doc.head:
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         style("""\
@@ -44,9 +52,18 @@ def homepage():
                     """)
     with doc:
         h1(homepage_title)
-        nav_bar = ul()
-        for item in nav_list:
-            nav_bar += li(a(item, href="#"))
+        nav_bar = nav()
+        with nav_bar:
+            ul("Home Page:")
+            ul(ul(a("Home", href="index.html")))
+            ul("Miscellaneous:")
+            ul(ul(a(misc_menu_list, href=misc_menu_list)) for misc_menu_list in misc_menu_list)
+            ul("External Device / USB:")
+            ul(ul(a(usb_menu_list, href=usb_menu_list)) for usb_menu_list in usb_menu_list)
+            ul("File Activity:")
+            ul(ul(a(file_menu_list, href=file_menu_list)) for file_menu_list in file_menu_list)
+            ul("Other Plugins:")
+            ul(ul(a(others_menu_list, href=others_menu_list)) for others_menu_list in others_menu_list)
     with open(homepage_path, "w") as f:
         f.write(doc.render(pretty=True))
 
@@ -92,6 +109,10 @@ def html_template(args_title, args_path, args_json_obj):
             """)
     with doc:
         h1(args_title)
+        nav_bar = nav()
+        with nav_bar:
+            ul("Home Page:")
+            ul(ul(a("Home", href="index.html")))
         with div():
             raw(convert_json)
     with open(args_path, "w") as f:
