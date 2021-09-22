@@ -1,12 +1,12 @@
 #Computer\HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags
-
+#py -m pip install dateutil
 # https://isc.sans.edu/forums/diary/Jump+List+Files+Are+OLE+Files/19911/
 # https://olefile.readthedocs.io/en/latest/olefile.html#olefile.OleFileIO
 
 import olefile
 import LnkParse3
 import os
-from lnkfiles import Lnkfile
+from plugins.lnkfiles import Lnkfile
 import json
 
 CURRENT_USER_PROFILE = os.environ['USERPROFILE']

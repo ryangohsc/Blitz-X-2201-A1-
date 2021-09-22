@@ -1,8 +1,11 @@
 import argparse
-import importlib
 import os
+import fnmatch
+import importlib
+import sys
 
 PLUGIN_PATH = "plugins"
+EXCLUDED_PLUGINS = ['auxillary.py']
 
 # Argparser
 parser = argparse.ArgumentParser(
@@ -18,6 +21,7 @@ def load_plugins():
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
+    plugins = fnmatch.filter(plugins, "*py") 
     print("[+] Loading modules....")
     for plugin in plugins:
         print(plugin)
@@ -27,11 +31,15 @@ def load_plugins():
 
 def run_plugins(plugin_path, plugins):
     for plugin in plugins:
-        plugin = plugin[:-3]
-        plugin_path = "{}.{}".format(PLUGIN_PATH, plugin)
-        importlib.import_module(plugin_path)
-
-
+        if plugin in EXCLUDED_PLUGINS:
+            pass        
+        else:
+            plugin_name = plugin[:-3]
+            plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
+            module = importlib.import_module(plugin_path)
+            module.run()
+        
+        
 def print_banner():
     """
     Prints a banner
@@ -55,7 +63,6 @@ def main():
     plugin_path, plugins = load_plugins()
     run_plugins(plugin_path, plugins)
     
-
 
 if __name__ == '__main__':
     main()

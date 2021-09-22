@@ -1,8 +1,8 @@
 from winreg import *
 from win32com.shell import shell
-from Registry import Registry
-from auxillary import *
+from plugins.auxillary import *
 import json
+import fnmatch
 
 
 TITLE = "MRU"
