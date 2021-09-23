@@ -294,7 +294,8 @@ def usb_activities():
             with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
                 fh = FileHeader(buf, 0x0)
                 for xml, record in evtx_file_xml_view(fh):
-                    root = ET.fromstring(xml)
+                    parser = ET.XMLParser(encoding="utf-8")
+                    root = ET.fromstring(xml, parser=parser)
                     if root[0][1].text == "20003" or root[0][1].text == "20001":
                         my_list.append({
                             "eventid": root[0][1].text,
