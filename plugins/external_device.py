@@ -287,29 +287,35 @@ def usb_activities():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets events from the system event.")
     my_list.insert(0, "System event log")
-    event_dir = r"C:/Windows/System32/winevt/Logs/"
-    event_file = "System.evtx"
-    get_event_file = str(event_dir + event_file)
-    # event_file = os.environ["WINDIR"] + "\\System32\\winevt\\Logs\\System.evtx"
-    # event_file = str(Path(os.environ["WINDIR"] + "/System32/winevt/Logs/System.evtx"))
-    with open(get_event_file, "r") as f:
-        with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
-            fh = FileHeader(buf, 0x0)
-            for xml, record in evtx_file_xml_view(fh):
-                root = ET.fromstring(xml)
-                if root[0][1].text == "20003" or root[0][1].text == "20001":
-                    my_list.append({
-                        "eventid": root[0][1].text,
-                        "computer": root[0][12].text,
-                        "usersid": root[0][13].get("UserID"),
-                        "user": get_user_by_sid(root[0][13].get("UserID")),
-                        "driverfilename": root[1][0][1].text,
-                        "deviceinstanceid": root[1][0][2].text,
-                        "addservicestatus": root[1][0][5].text,
-                        "timestamp": root[0][7].get("SystemTime")
-                    })
-                    with open(filename, "w") as outfile:
-                        json.dump(my_list, outfile, indent=4)
+    try:
+        # event_file = os.environ["WINDIR"] + "\\System32\\winevt\\Logs\\System.evtx"
+        event_file = str(Path(os.environ["WINDIR"] + "/System32/winevt/Logs/System.evtx"))
+        with open(event_file, "r") as f:
+            with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
+                fh = FileHeader(buf, 0x0)
+                for xml, record in evtx_file_xml_view(fh):
+                    root = ET.fromstring(xml)
+                    if root[0][1].text == "20003" or root[0][1].text == "20001":
+                        my_list.append({
+                            "eventid": root[0][1].text,
+                            "computer": root[0][12].text,
+                            "usersid": root[0][13].get("UserID"),
+                            "user": get_user_by_sid(root[0][13].get("UserID")),
+                            "driverfilename": root[1][0][1].text,
+                            "deviceinstanceid": root[1][0][2].text,
+                            "addservicestatus": root[1][0][5].text,
+                            "timestamp": root[0][7].get("SystemTime")
+                        })
+                        with open(filename, "w") as outfile:
+                            json.dump(my_list, outfile, indent=4)
+    except FileNotFoundError:
+        my_list.append({
+            "not found": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
+        })
+        with open(filename, "w") as outfile:
+            json.dump(my_list, outfile, indent=4)
+    except ModuleNotFoundError:
+        pass
 
 
 def run():
