@@ -6,11 +6,12 @@ import sys
 
 PLUGIN_PATH = "plugins"
 EXCLUDED_PLUGINS = []
+POST_PROCESSING_PLUGINS = ["report.py"]
 
 # Argparser
 parser = argparse.ArgumentParser(
     description="Write the description of the tool here",
-    epilog="ICT2202 Assignment 1 Team PanzerWerfer"
+    epilog="ICT2202 Assignment 1 Team Panzerwerfer"
 )
 requiredNamed = parser.add_argument_group("required arguments")
 parser.add_argument("-o", help="")
@@ -39,9 +40,14 @@ def load_plugins():
 def run_plugins(plugin_path, plugins):
     print("\n[+] Running plugins!")
     for plugin in plugins:
-        if plugin in EXCLUDED_PLUGINS:
-            pass        
+        if plugin in EXCLUDED_PLUGINS or plugin in POST_PROCESSING_PLUGINS:
+            pass
         else:
+            plugin_name = plugin[:-3]
+            plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
+            module = importlib.import_module(plugin_path)
+            module.run()
+        if plugin in POST_PROCESSING_PLUGINS:
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)

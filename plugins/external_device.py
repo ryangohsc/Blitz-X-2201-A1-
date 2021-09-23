@@ -287,7 +287,7 @@ def usb_activities():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets events from the system event.")
     my_list.insert(0, "System event log")
-    event_file = os.environ["WINDIR"] + "\\System32\\winevt\\logs\\System.evtx"
+    event_file = os.environ["WINDIR"] + "\\System32\\winevt\\Logs\\System.evtx"
     with open(event_file, "r") as f:
         with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
             fh = FileHeader(buf, 0x0)
