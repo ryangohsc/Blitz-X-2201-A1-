@@ -25,6 +25,29 @@ def return_excluded():
     return EXCLUDED_PLUGINS
 
 
+def return_post():
+    """
+    Returns the post-processing plugins
+    """
+    return POST_PROCESSING_PLUGINS
+
+
+def return_included():
+    """
+    Returns the included plugins
+    """
+    plugin_list = []
+    plugin_path = os.getcwd()  # plugins folder
+    plugins = os.listdir(plugin_path)
+    plugins = fnmatch.filter(plugins, "*py")
+    for plugin in plugins:
+        if plugin in EXCLUDED_PLUGINS:
+            pass
+        else:
+            plugin_list.append(plugin)
+    return plugin_list
+
+
 def load_plugins():
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
@@ -53,8 +76,8 @@ def run_plugins(plugin_path, plugins):
             module = importlib.import_module(plugin_path)
             module.run()
     print("\n[!] Plugins successfully executed!")
-        
-        
+
+
 def print_banner():
     """
     Prints a banner
@@ -77,7 +100,7 @@ def main():
     print("-" * 50)
     plugin_path, plugins = load_plugins()
     run_plugins(plugin_path, plugins)
-    
+
 
 if __name__ == '__main__':
     main()

@@ -5,7 +5,7 @@ from dominate.util import raw
 from pathlib import Path
 import glob
 import os
-from main import return_excluded
+from main import return_excluded, return_included, return_post
 import json
 from datetime import datetime
 
@@ -90,9 +90,15 @@ def homepage():
     usb_menu_list = get_usb_menu_list()
     file_menu_list = get_file_menu_list()
     others_menu_list = get_others_menu_list()
-    excluded_plugins = "".join(return_excluded())
+    excluded_plugins = ", ".join(return_excluded())
+    included_plugins = ", ".join(return_included())
+    post_plugins = ", ".join(return_post())
     if len(excluded_plugins) == 0:
-        excluded_plugins = "No plugins were excluded."
+        excluded_plugins = "No plugins were excluded"
+    if len(included_plugins) == 0:
+        included_plugins = "No plugins were included"
+    if len(post_plugins) == 0:
+        post_plugins = "No plugins were used for post-processing"
     with doc.head:
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         style("""\
@@ -191,14 +197,25 @@ def homepage():
                 dropdown_div = div(cls="dropdown-content")
                 dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
         h1(homepage_title)
-        p("This report was generated on: " + str(get_datetime()) + " local time.")
-        p("Modules that are loaded:")
-        p("Modules that are excluded are: " + excluded_plugins)
+        pre(" ######                              #     # \n"
+            " #     # #      # ##### ######        #   # \n"
+            " #     # #      #   #       #          # #  \n"
+            " ######  #      #   #      #   #####    #   \n"
+            " #     # #      #   #     #            # #  \n"
+            " #     # #      #   #    #            #   # \n"
+            " ######  ###### #   #   ######       #     # \n")
+        p("This report was generated on: " + str(get_datetime()) + " Local Time.")
+        p("Modules that were loaded: " + included_plugins + ".")
+        p("Modules that were used for post-processing: " + post_plugins + ".")
+        p("Modules that were excluded are: " + excluded_plugins + ".")
     with open(homepage_path, "w") as f:
         f.write(doc.render(pretty=True))
 
 
 def get_json_files():
+    """
+    Returns all files in a list that resides in the data directory with a json extension
+    """
     json_files = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
         for file in files:
@@ -207,6 +224,9 @@ def get_json_files():
 
 
 def get_json_title():
+    """
+    Returns all json file titles in the data directory in a list
+    """
     json_title = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
         for file in files:
@@ -216,6 +236,9 @@ def get_json_title():
 
 
 def json_to_html(args_dir):
+    """
+    Takes in the full pathname of the json file and converts it to html and returns it
+    """
     with open(args_dir, "r") as f:
         json_info = json.loads(f.read())
         convert_json = json2html.convert(json=json_info)
@@ -225,6 +248,9 @@ def json_to_html(args_dir):
 
 
 def html_template():
+    """
+    Generates a template in HTML
+    """
     json_files = get_json_files()
     json_title = get_json_title()
     for json_files, json_title in zip(json_files, json_title):
