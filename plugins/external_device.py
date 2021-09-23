@@ -317,6 +317,8 @@ def usb_activities():
             json.dump(my_list, outfile, indent=4)
     except ModuleNotFoundError:
         pass
+    except:
+        pass
 
 
 def run():
