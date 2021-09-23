@@ -153,7 +153,7 @@ def get_prev_ran_prog():
         title = "Previously Ran Programs"
         filename = Path(ROOT + "/data/misc/misc_prev_ran_programs.json")
         filename.parent.mkdir(exist_ok=True, parents=True)
-        reportname = Path(ROOT + "/htmlreport/misc_startup_apps.html")
+        reportname = Path(ROOT + "/htmlreport/misc_prev_ran_programs.html")
         reportname.parent.mkdir(exist_ok=True, parents=True)
         my_list.insert(0, "This module gets previously ran programs from HKCU MuiCache.")
         my_list.insert(0, title)
