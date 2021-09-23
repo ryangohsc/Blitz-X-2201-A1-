@@ -8,7 +8,6 @@ import xml.etree.ElementTree as ET
 from plugins.auxillary import convert_time, dt_from_win32_ts, get_project_root
 import json
 from pathlib import Path
-from plugins.report import html_template
 
 ROOT = str(get_project_root())
 
@@ -50,13 +49,10 @@ def get_known_usb():
     Produces known USB devices from HKLM USBStor
     """
     my_list = []
-    title = "Drive Letter & Volume Name"
     filename = Path(ROOT + "/data/usb/usb_known_usb.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_known_usb.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USBStor data from registry.")
-    my_list.insert(0, title)
+    my_list.insert(0, "Drive Letter & Volume Name")
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
     for i in range(QueryInfoKey(query)[0]):
         device_name = EnumKey(query, i)
@@ -77,10 +73,8 @@ def get_known_usb():
                 "friendly_name": friendly_name,
                 "HWID": hwid
             })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 def get_mounted_devices():
@@ -90,14 +84,11 @@ def get_mounted_devices():
     Take Volume{...} compare with get_user() to see if user plugged in the USB
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
-    title = "Mounted Devices"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_mounted_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_mounted_devices.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
-    my_list.insert(0, title)
+    my_list.insert(0, "Mounted Devices")
     for i in range(QueryInfoKey(query)[1]):
         mounted_devices = EnumValue(query, i)
         mounted_devices_data = mounted_devices[1].hex()
@@ -105,10 +96,8 @@ def get_mounted_devices():
             "device_name": str(mounted_devices[0]),
             "registry_data": str(mounted_devices_data)
         })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 def get_portable_devices():
@@ -116,14 +105,11 @@ def get_portable_devices():
     HKLM Windows Portable Devices
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows Portable Devices\Devices", 0)
-    title = "Windows Portable Devices"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_portable_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_portable_devices.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
-    my_list.insert(0, title)
+    my_list.insert(0, "Windows Portable Devices")
     for i in range(QueryInfoKey(query)[0]):
         list_devices = EnumKey(query, i)
         query2 = OpenKey(HKEY_LOCAL_MACHINE,
@@ -134,10 +120,8 @@ def get_portable_devices():
             "device_name": str(list_devices),
             "friendly_name": str(friendly_name)
         })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 def cmp_usb_sn(arg_sn):
@@ -164,14 +148,11 @@ def get_usb_identification():
     Will cross check with USBSTOR serial no
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
-    title = "USB Identification"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_identification.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_identification.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor.")
-    my_list.insert(0, title)
+    my_list.insert(0, "USB Identification")
     for i in range(QueryInfoKey(query)[0]):
         vid_pid = EnumKey(query, i)
         if not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower():
@@ -193,10 +174,8 @@ def get_usb_identification():
                 "pid": str(usb_pid),
                 "last modified": str(timestamp)
             })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 # setupapi.dev.log
@@ -205,13 +184,10 @@ def get_first_time_setup():
     Gets first time setup log in setupapi.dev.log
     """
     my_list = []
-    title = "First Time Setup"
     filename = Path(ROOT + "/data/usb/usb_first_time_setup_interest.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_first_time_setup_interest.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
-    my_list.insert(0, title)
+    my_list.insert(0, "First Time Setup")
     winpath = os.environ["WINDIR"] + "\\INF\\"
     with open(winpath + "setupapi.dev.log", "r") as log_file:
         for line in log_file:
@@ -221,10 +197,8 @@ def get_first_time_setup():
                     "device install": str(line),
                     "device install time": str(next_line)
                 })
-                json_obj = json.dumps(my_list, indent=4)
-                html_template(title, reportname, json_obj)
-                with open(filename, 'w') as outfile:
-                    outfile.write(json_obj)
+                with open(filename, "w") as outfile:
+                    json.dump(my_list, outfile, indent=4)
 
 
 # User
@@ -234,23 +208,18 @@ def get_user():
     If the device GUID correlates to the keys in the user, it shows that the device is used by the current user
     """
     query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 0)
-    title = "MountPoints"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_user.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_user.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
-    my_list.insert(0, title)
+    my_list.insert(0, "MountPoints")
     for i in range(QueryInfoKey(query)[0]):
         list_guid = EnumKey(query, i)
         my_list.append({
             "Device GUID": str(list_guid)
         })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 # Volume Serial Number
@@ -260,14 +229,11 @@ def get_vol_sn():
     Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
     But still applicable to corporate devices nonetheless as of the time of writing.
     """
-    title = "External Memory Device Management"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_vol_sn_emdmgmt.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_vol_sn_emdmgmt.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number.")
-    my_list.insert(0, title)
+    my_list.insert(0, "External Memory Device Management")
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt", 0)
         for i in range(QueryInfoKey(query)[0]):
@@ -301,18 +267,14 @@ def get_vol_sn():
                 "vsn": str(hex_vol_sn),
                 "last modified": str(timestamp)
             })
-            json_obj = json.dumps(my_list, indent=4)
-            html_template(title, reportname, json_obj)
             with open(filename, "w") as outfile:
-                outfile.write(json_obj)
+                json.dump(my_list, outfile, indent=4)
     except WindowsError:
         my_list.append({
             "not found": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
         })
-        json_obj = json.dumps(my_list, indent=4)
-        html_template(title, reportname, json_obj)
         with open(filename, "w") as outfile:
-            outfile.write(json_obj)
+            json.dump(my_list, outfile, indent=4)
 
 
 # PnP Events
@@ -320,14 +282,11 @@ def usb_activities():
     """
     Accesses the System event file and gets the specified EventID
     """
-    title = "System event log"
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_sys_event.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    reportname = Path(ROOT + "/htmlreport/usb_sys_event.html")
-    reportname.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets events from the system event.")
-    my_list.insert(0, title)
+    my_list.insert(0, "System event log")
     event_file = os.environ["WINDIR"] + "\\System32\\winevt\\logs\\System.evtx"
     with open(event_file, "r") as f:
         with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
@@ -345,10 +304,8 @@ def usb_activities():
                         "addservicestatus": root[1][0][5].text,
                         "timestamp": root[0][7].get("SystemTime")
                     })
-                    json_obj = json.dumps(my_list, indent=4)
-                    html_template(title, reportname, json_obj)
                     with open(filename, "w") as outfile:
-                        outfile.write(json_obj)
+                        json.dump(my_list, outfile, indent=4)
 
 
 def run():

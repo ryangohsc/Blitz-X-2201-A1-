@@ -10,7 +10,6 @@ from plugins.lnkfiles import Lnkfile
 import json
 from pathlib import Path
 from plugins.auxillary import get_project_root
-from plugins.report import html_template
 
 CURRENT_USER_PROFILE = os.environ['USERPROFILE']
 JUMPLISTS_DIRECTORY = r"{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent\\AutomaticDestinations".format(CURRENT_USER_PROFILE)
@@ -18,14 +17,11 @@ TITLE = "Jumplist"
 DESCRIPTION = "This module parses the automatic jumplist files on the target system."
 ROOT = str(get_project_root())
 OUTFILE = Path(ROOT + "/data/jumplist/file_activity_jumplist.json")
-OUTREPORT = Path(ROOT + "/htmlreport/file_activity_jumplist.html")
 
 
 def dump_to_json(file_path, data):
-	json_obj = json.dumps(data, indent=4, default=str)
-	html_template(TITLE, OUTREPORT, json_obj)
-	with open(file_path, 'w') as outfile:
-		outfile.write(json_obj)
+	with open(file_path, "w") as outfile:
+		json.dump(data, outfile, default=str, indent=4)
 
 
 def parse_jumplist_json(json_data, data):
@@ -98,7 +94,6 @@ def run():
 	data.insert(0, DESCRIPTION)
 	data.insert(0, TITLE)
 	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-	OUTREPORT.parent.mkdir(exist_ok=True, parents=True)
 	dump_to_json(OUTFILE, data)	
 
 

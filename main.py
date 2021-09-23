@@ -17,11 +17,18 @@ parser.add_argument("-o", help="")
 args = parser.parse_args()
 
 
+def return_excluded():
+    """
+    Returns the excluded plugins
+    """
+    return EXCLUDED_PLUGINS
+
+
 def load_plugins():
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
-    plugins = fnmatch.filter(plugins, "*py") 
+    plugins = fnmatch.filter(plugins, "*py")
     print("[+] Loading plugins....")
     for plugin in plugins:
         print(plugin)

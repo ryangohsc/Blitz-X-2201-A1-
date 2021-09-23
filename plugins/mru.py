@@ -5,35 +5,31 @@ import json
 import fnmatch
 from pathlib import Path
 from plugins.auxillary import get_project_root
-from plugins.report import html_template
 
 
 TITLE = "MRU"
 ROOT = str(get_project_root())
 DESCRIPTION = "This module parses the MRU on the target system."
 OUTFILE = Path(ROOT + "/data/mru/file_activity_mru.json")
-OUTREPORT = Path(ROOT + "/htmlreport/file_activity_mru.html")
 
 
 class Mru:
 	def __init__(self):
-		self.reg_last_modified = None 
-		self.reg_path = None 
-		
+		self.reg_last_modified = None
+		self.reg_path = None
+
 
 def dump_to_json(file_path, data):
-	json_obj = json.dumps(data, indent=4, default=str)
-	html_template(TITLE, OUTREPORT, json_obj)
-	with open(file_path, 'w') as outfile:
-		outfile.write(json_obj)
+	with open(file_path, "w") as outfile:
+		json.dump(data, outfile, default=str, indent=4)
 
 
 def get_recentdoc_subkeys():
 	key = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU"
-	sub_key_list =[]
+	sub_key_list = []
 	key = OpenKey(HKEY_CURRENT_USER, key)
 	try:
-		sub_keys,values,time = QueryInfoKey(key)
+		sub_keys, values, time = QueryInfoKey(key)
 		for i in range(sub_keys):
 			subkey = EnumKey(key, i)
 			sub_key_list.append(subkey)
@@ -68,14 +64,13 @@ def parse_mru(title, description):
 			i += 1
 	data = sorted(data, key=lambda k: k['regkey_last_modified_date'], reverse=True)
 	data.insert(0, description)
-	data.insert(0, title)	
+	data.insert(0, title)
 	return data
 
 
 def run():
 	data = parse_mru(TITLE, DESCRIPTION)
 	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-	OUTREPORT.parent.mkdir(exist_ok=True, parents=True)
 	dump_to_json(OUTFILE, data)
 
 
