@@ -37,7 +37,8 @@ def return_included():
     Returns the included plugins
     """
     plugin_list = []
-    plugin_path = os.getcwd()  # plugins folder
+    cwd = os.getcwd()
+    plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
     plugins = fnmatch.filter(plugins, "*py")
     for plugin in plugins:
