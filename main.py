@@ -6,7 +6,7 @@ import sys
 
 PLUGIN_PATH = "plugins"
 EXCLUDED_PLUGINS = []
-POST_PROCESSING_PLUGINS = ["report.py"]
+POST_PROCESSING_PLUGINS = ["report.py, zehash.py"]
 
 # Argparser
 parser = argparse.ArgumentParser(
