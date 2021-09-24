@@ -10,14 +10,7 @@ import json
 from datetime import datetime
 
 
-def get_project_root():
-    """
-    Returns project root directory
-    """
-    return Path(__file__).parent.parent
-
-
-ROOT = str(get_project_root())
+ROOT = str(Path(__file__).parent.parent)
 
 
 def get_datetime():
@@ -44,7 +37,7 @@ def get_misc_menu_list():
     """
     Returns a list of files that is in the misc category
     """
-    misc_menu = get_files(str(Path(ROOT + "/htmlreport/")), "/misc*")
+    misc_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/misc*")
     return misc_menu
 
 
@@ -52,7 +45,7 @@ def get_usb_menu_list():
     """
     Returns a list of files that is in the usb category
     """
-    usb_menu = get_files(str(Path(ROOT + "/htmlreport/")), "/usb*")
+    usb_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/usb*")
     return usb_menu
 
 
@@ -60,7 +53,7 @@ def get_file_menu_list():
     """
     Returns a list of files that is in the file activity category
     """
-    file_menu = get_files(str(Path(ROOT + "/htmlreport/")), "/file_activity*")
+    file_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/file_activity*")
     return file_menu
 
 
@@ -68,7 +61,7 @@ def get_others_menu_list():
     """
     Returns a list of files that is in the others category
     """
-    others_menu = get_files(str(Path(ROOT + "/htmlreport/")), "/*")
+    others_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/*")
     others_menu = [m for m in others_menu if m not in get_misc_menu_list()]
     others_menu = [m for m in others_menu if m not in get_usb_menu_list()]
     others_menu = [m for m in others_menu if m not in get_file_menu_list()]
@@ -84,7 +77,7 @@ def homepage():
     Generates index.html page
     """
     homepage_title = "Blitz-X Home Page"
-    homepage_path = Path(ROOT + "/htmlreport/index.html")
+    homepage_path = Path(ROOT + "/HTMLReport/index.html")
     doc = dominate.document(title=str(homepage_title))
     misc_menu_list = get_misc_menu_list()
     usb_menu_list = get_usb_menu_list()
@@ -384,7 +377,7 @@ def html_template():
             h1(json_title)
             with div():
                 raw(json_html)
-        filename = Path(ROOT + "/htmlreport/" + json_title + ".html")
+        filename = Path(ROOT + "/HTMLReport/" + json_title + ".html")
         filename.parent.mkdir(exist_ok=True, parents=True)
         with open(filename, "w") as f:
             f.write(doc.render(pretty=True))
