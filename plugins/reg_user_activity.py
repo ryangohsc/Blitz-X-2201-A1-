@@ -1,7 +1,7 @@
 from winreg import *
 import json
 from pathlib import Path
-from plugins.auxillary import get_project_root
+from main import get_project_root
 
 ROOT = str(get_project_root())
 

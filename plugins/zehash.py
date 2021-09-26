@@ -1,5 +1,5 @@
 import hashlib
-from plugins.auxillary import get_project_root
+from main import get_project_root
 from pathlib import Path
 import glob
 import os

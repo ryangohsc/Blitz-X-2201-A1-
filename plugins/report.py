@@ -18,7 +18,7 @@ def get_datetime():
     Gets the current computer time and returns it
     """
     now = datetime.now()
-    dt_string = now.strftime("%d/%m/%YT%H:%M:%S")
+    dt_string = now.strftime("%d/%m/%YT%H:%M:%S.%f")
     return dt_string
 
 
@@ -33,42 +33,38 @@ def get_files(path, arg_name):
     return result
 
 
-def get_misc_menu_list():
+def nav_misc_menu_list():
     """
     Returns a list of files that is in the misc category
     """
-    misc_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/misc*")
+    misc_menu = get_files(str(Path(ROOT + "/data/**/")), "/misc*")
     return misc_menu
 
 
-def get_usb_menu_list():
+def nav_usb_menu_list():
     """
     Returns a list of files that is in the usb category
     """
-    usb_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/usb*")
+    usb_menu = get_files(str(Path(ROOT + "/data/**/")), "/usb*")
     return usb_menu
 
 
-def get_file_menu_list():
+def nav_file_menu_list():
     """
     Returns a list of files that is in the file activity category
     """
-    file_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/file_activity*")
+    file_menu = get_files(str(Path(ROOT + "/data/**/")), "/file_activity*")
     return file_menu
 
 
-def get_others_menu_list():
+def nav_others_menu_list():
     """
     Returns a list of files that is in the others category
     """
-    others_menu = get_files(str(Path(ROOT + "/HTMLReport/")), "/*")
-    others_menu = [m for m in others_menu if m not in get_misc_menu_list()]
-    others_menu = [m for m in others_menu if m not in get_usb_menu_list()]
-    others_menu = [m for m in others_menu if m not in get_file_menu_list()]
-    try:
-        others_menu.remove("index.html")
-    except ValueError:
-        pass
+    others_menu = get_files(str(Path(ROOT + "/data/**/")), "/*")
+    others_menu = [m for m in others_menu if m not in nav_misc_menu_list()]
+    others_menu = [m for m in others_menu if m not in nav_usb_menu_list()]
+    others_menu = [m for m in others_menu if m not in nav_file_menu_list()]
     return others_menu
 
 
@@ -78,11 +74,16 @@ def homepage():
     """
     homepage_title = "Blitz-X Home Page"
     homepage_path = Path(ROOT + "/HTMLReport/index.html")
+    homepage_path.parent.mkdir(exist_ok=True, parents=True)
     doc = dominate.document(title=str(homepage_title))
-    misc_menu_list = get_misc_menu_list()
-    usb_menu_list = get_usb_menu_list()
-    file_menu_list = get_file_menu_list()
-    others_menu_list = get_others_menu_list()
+    misc_menu_list = nav_misc_menu_list()
+    misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+    usb_menu_list = nav_usb_menu_list()
+    usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+    file_menu_list = nav_file_menu_list()
+    file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+    others_menu_list = nav_others_menu_list()
+    others_menu_list = [x.replace("json", "html") for x in others_menu_list]
     excluded_plugins = ", ".join(return_excluded())
     included_plugins = ", ".join(return_included())
     post_plugins = ", ".join(return_post())
@@ -197,6 +198,12 @@ def homepage():
             " #     # #      #   #     #            # #  \n"
             " #     # #      #   #    #            #   # \n"
             " ######  ###### #   #   ######       #     # \n")
+        p("Blitz-X (Blitz-eXtractor) is a modular forensic triage tool written in Python designed to access various "
+          "forensic artifacts on Windows relating to user data exfiltration. ")
+        p("The tool will parse the artifacts, and present them in a format viable for analysis. ")
+        p("The output may provide valuable insights during an incident response in a Windows environment while "
+          "waiting for a full disk image to be acquired.")
+        p("The tool is meant to run on live systems on the offending User Account with administrative rights.")
         p("This report was generated on: " + str(get_datetime()) + " Local Time.")
         p("Modules that were loaded: " + included_plugins + ".")
         p("Modules that were used for post-processing: " + post_plugins + ".")
@@ -244,6 +251,14 @@ def html_template():
     """
     Generates a template in HTML
     """
+    misc_menu_list = nav_misc_menu_list()
+    misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+    usb_menu_list = nav_usb_menu_list()
+    usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+    file_menu_list = nav_file_menu_list()
+    file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+    others_menu_list = nav_others_menu_list()
+    others_menu_list = [x.replace("json", "html") for x in others_menu_list]
     json_files = get_json_files()
     json_title = get_json_title()
     for json_files, json_title in zip(json_files, json_title):
@@ -343,10 +358,6 @@ def html_template():
                 }
                 """)
         with doc:
-            misc_menu_list = get_misc_menu_list()
-            usb_menu_list = get_usb_menu_list()
-            file_menu_list = get_file_menu_list()
-            others_menu_list = get_others_menu_list()
             nav_bar = div(cls="navbar")
             with nav_bar:
                 a("Home", href="index.html")

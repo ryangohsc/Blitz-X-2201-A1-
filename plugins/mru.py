@@ -1,10 +1,10 @@
 from winreg import *
 from win32com.shell import shell
-from plugins.auxillary import *
+from plugins.misc import *
 import json
 import fnmatch
 from pathlib import Path
-from plugins.auxillary import get_project_root
+from main import get_project_root
 
 
 TITLE = "MRU"

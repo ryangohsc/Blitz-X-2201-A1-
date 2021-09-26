@@ -9,7 +9,7 @@ import os
 from plugins.lnkfiles import Lnkfile
 import json
 from pathlib import Path
-from plugins.auxillary import get_project_root
+from main import get_project_root
 
 CURRENT_USER_PROFILE = os.environ['USERPROFILE']
 JUMPLISTS_DIRECTORY = r"{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent\\AutomaticDestinations".format(CURRENT_USER_PROFILE)
