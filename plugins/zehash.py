@@ -90,7 +90,10 @@ def hash_files():
         data_folder = get_data_files(str(Path(ROOT)), "/data/**/*.json")
         append_write = check_exist(HASHPATH)
         with open(str(HASHPATH), append_write) as f:
-            f.write("\nMD5\n")
+            if append_write == "w":
+                f.write("MD5\n")
+            else:
+                f.write("\nMD5\n")
             for data in data_folder:
                 result = md5(data)
                 p = Path(data)
@@ -120,7 +123,10 @@ def hash_files():
         report_folder = get_data_files(str(Path(ROOT)), "/HTMLReport/*.html")
         append_write = check_exist(HASHPATH)
         with open(str(HASHPATH), append_write) as f:
-            f.write("\nMD5\n")
+            if append_write == "w":
+                f.write("MD5\n")
+            else:
+                f.write("\nMD5\n")
             for data in report_folder:
                 result = md5(data)
                 p = Path(data)
