@@ -81,7 +81,7 @@ def homepage():
     Generates index.html page, it will only execute when ran from main.py
     """
     try:
-        homepage_title = "Blitz-X Home Page"
+        homepage_title = "Blitz-X Summary Page"
         homepage_path = Path(ROOT + "/HTMLReport/index.html")
         homepage_path.parent.mkdir(exist_ok=True, parents=True)
         doc = dominate.document(title=str(homepage_title))
@@ -208,6 +208,8 @@ def homepage():
                     dropdown_div = div(cls="dropdown-content")
                     dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
             h1(homepage_title)
+            hr()
+            h2("About Blitz-X")
             pre("\n ######                              #     # \n"
                 " #     # #      # ##### ######        #   # \n"
                 " #     # #      #   #       #          # #  \n"
@@ -222,6 +224,7 @@ def homepage():
               "waiting for a full disk image to be acquired.")
             p("The tool is meant to run on live systems on the offending User Account with administrative rights.")
             hr()
+            h2("Report Information")
             p("This report was generated on: " + str(get_datetime()) + " Local Time.")
             p("Modules that were loaded: " + included_plugins + ".")
             p("Modules that were used for post-processing: " + post_plugins + ".")
@@ -416,6 +419,7 @@ def html_template():
                         dropdown_div.add(
                             a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
                 h1(json_title)
+                hr()
                 with div():
                     raw(json_html)
             filename = Path(ROOT + "/HTMLReport/" + json_title + ".html")
