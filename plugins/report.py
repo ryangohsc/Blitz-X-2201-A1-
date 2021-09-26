@@ -177,36 +177,41 @@ def homepage():
             nav_bar = div(cls="navbar")
             with nav_bar:
                 a("Home", href="index.html")
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("Miscellaneous", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("External Device / USB", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("File Activity", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("Keyword Search", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("Other Plugins", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
+                if misc_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Miscellaneous", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
+                if usb_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("External Device / USB", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
+                if file_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("File Activity", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
+                if keyword_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Keyword Search", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
+                if others_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Other Plugins", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
             h1(homepage_title)
             hr()
             h2("About Blitz-X")
@@ -387,37 +392,42 @@ def html_template():
                 nav_bar = div(cls="navbar")
                 with nav_bar:
                     a("Home", href="index.html")
-                    dropdown = div(cls="dropdown")
-                    with dropdown:
-                        button("Miscellaneous", cls="dropbtn")
-                    with dropdown:
-                        dropdown_div = div(cls="dropdown-content")
-                        dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
-                    dropdown = div(cls="dropdown")
-                    with dropdown:
-                        button("External Device / USB", cls="dropbtn")
-                    with dropdown:
-                        dropdown_div = div(cls="dropdown-content")
-                        dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
-                    dropdown = div(cls="dropdown")
-                    with dropdown:
-                        button("File Activity", cls="dropbtn")
-                    with dropdown:
-                        dropdown_div = div(cls="dropdown-content")
-                        dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
-                    dropdown = div(cls="dropdown")
-                    with dropdown:
-                        button("Keyword Search", cls="dropbtn")
-                    with dropdown:
-                        dropdown_div = div(cls="dropdown-content")
-                        dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
-                    dropdown = div(cls="dropdown")
-                    with dropdown:
-                        button("Other Plugins", cls="dropbtn")
-                    with dropdown:
-                        dropdown_div = div(cls="dropdown-content")
-                        dropdown_div.add(
-                            a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
+                    if misc_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("Miscellaneous", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
+                    if usb_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("External Device / USB", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
+                    if file_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("File Activity", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
+                    if keyword_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("Keyword Search", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
+                    if others_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("Other Plugins", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(
+                                a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
                 h1(json_title)
                 hr()
                 with div():
