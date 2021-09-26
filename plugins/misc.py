@@ -17,12 +17,15 @@ def get_services():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets currently installed services.")
     my_list.insert(0, "Windows Services")
-    for service in c.Win32_Service():
-        my_list.append({
-            "service": str(service.DisplayName),
-        })
-    with open(filename, "w") as outfile:
-        json.dump(my_list, outfile, indent=4)
+    try:
+        for service in c.Win32_Service():
+            my_list.append({
+                "service": str(service.DisplayName),
+            })
+        with open(filename, "w") as outfile:
+            json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 def get_windows_version():
@@ -43,8 +46,8 @@ def get_windows_version():
             })
         with open(filename, "w") as outfile:
             json.dump(my_list, outfile, indent=4)
-    except PermissionError:
-        print("Unable to get Windows Version as this function requires Admin Rights")
+    except:
+        pass
 
 
 def get_system_env_var():
@@ -65,8 +68,8 @@ def get_system_env_var():
             })
             with open(filename, "w") as outfile:
                 json.dump(my_list, outfile, indent=4)
-    except PermissionError:
-        print("Unable to get System Environment Variables as this function requires Admin Rights")
+    except:
+        pass
 
 
 def get_start_up_apps():
@@ -87,8 +90,8 @@ def get_start_up_apps():
             })
             with open(filename, "w") as outfile:
                 json.dump(my_list, outfile, indent=4)
-    except PermissionError:
-        print("Unable to get Start Up Apps as this function requires Admin Rights")
+    except:
+        pass
 
 
 def get_prev_ran_prog():
@@ -111,8 +114,8 @@ def get_prev_ran_prog():
             })
             with open(filename, "w") as outfile:
                 json.dump(my_list, outfile, indent=4)
-    except PermissionError:
-        print("Unable to get previously ran programs as this function requires Admin Rights")
+    except:
+        pass
 
 
 def run():

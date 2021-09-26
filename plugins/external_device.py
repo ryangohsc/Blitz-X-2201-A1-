@@ -53,28 +53,31 @@ def get_known_usb():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USBStor data from registry.")
     my_list.insert(0, "Drive Letter & Volume Name")
-    query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
-    for i in range(QueryInfoKey(query)[0]):
-        device_name = EnumKey(query, i)
-        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name, 0)
-        for j in range(QueryInfoKey(query2)[0]):
-            serial_no = EnumKey(query2, j)
-            query3 = OpenKey(HKEY_LOCAL_MACHINE,
-                             r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name + "\\" + serial_no, 0)
-            for x in range(QueryInfoKey(query3)[1]):
-                hardware_id = EnumValue(query3, x)
-                if hardware_id[0] == "FriendlyName":
-                    friendly_name = hardware_id[1]
-                if hardware_id[0] == "HardwareID":
-                    hwid = hardware_id[1]
-            my_list.append({
-                "name": str(device_name),
-                "serial": str(serial_no),
-                "friendly_name": friendly_name,
-                "HWID": hwid
-            })
-        with open(filename, "w") as outfile:
-            json.dump(my_list, outfile, indent=4)
+    try:
+        query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
+        for i in range(QueryInfoKey(query)[0]):
+            device_name = EnumKey(query, i)
+            query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name, 0)
+            for j in range(QueryInfoKey(query2)[0]):
+                serial_no = EnumKey(query2, j)
+                query3 = OpenKey(HKEY_LOCAL_MACHINE,
+                                 r"SYSTEM\CurrentControlSet\Enum\USBStor" + "\\" + device_name + "\\" + serial_no, 0)
+                for x in range(QueryInfoKey(query3)[1]):
+                    hardware_id = EnumValue(query3, x)
+                    if hardware_id[0] == "FriendlyName":
+                        friendly_name = hardware_id[1]
+                    if hardware_id[0] == "HardwareID":
+                        hwid = hardware_id[1]
+                my_list.append({
+                    "name": str(device_name),
+                    "serial": str(serial_no),
+                    "friendly_name": friendly_name,
+                    "HWID": hwid
+                })
+            with open(filename, "w") as outfile:
+                json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 def get_mounted_devices():
@@ -89,15 +92,18 @@ def get_mounted_devices():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
     my_list.insert(0, "Mounted Devices")
-    for i in range(QueryInfoKey(query)[1]):
-        mounted_devices = EnumValue(query, i)
-        mounted_devices_data = mounted_devices[1].hex()
-        my_list.append({
-            "device_name": str(mounted_devices[0]),
-            "registry_data": str(mounted_devices_data)
-        })
-        with open(filename, "w") as outfile:
-            json.dump(my_list, outfile, indent=4)
+    try:
+        for i in range(QueryInfoKey(query)[1]):
+            mounted_devices = EnumValue(query, i)
+            mounted_devices_data = mounted_devices[1].hex()
+            my_list.append({
+                "device_name": str(mounted_devices[0]),
+                "registry_data": str(mounted_devices_data)
+            })
+            with open(filename, "w") as outfile:
+                json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 def get_portable_devices():
@@ -110,18 +116,21 @@ def get_portable_devices():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
     my_list.insert(0, "Windows Portable Devices")
-    for i in range(QueryInfoKey(query)[0]):
-        list_devices = EnumKey(query, i)
-        query2 = OpenKey(HKEY_LOCAL_MACHINE,
-                         r"SOFTWARE\Microsoft\Windows Portable Devices\Devices" + "\\" + list_devices, 0)
-        for y in range(QueryInfoKey(query2)[1]):
-            friendly_name = EnumValue(query2, y)
-        my_list.append({
-            "device_name": str(list_devices),
-            "friendly_name": str(friendly_name)
-        })
-        with open(filename, "w") as outfile:
-            json.dump(my_list, outfile, indent=4)
+    try:
+        for i in range(QueryInfoKey(query)[0]):
+            list_devices = EnumKey(query, i)
+            query2 = OpenKey(HKEY_LOCAL_MACHINE,
+                             r"SOFTWARE\Microsoft\Windows Portable Devices\Devices" + "\\" + list_devices, 0)
+            for y in range(QueryInfoKey(query2)[1]):
+                friendly_name = EnumValue(query2, y)
+            my_list.append({
+                "device_name": str(list_devices),
+                "friendly_name": str(friendly_name)
+            })
+            with open(filename, "w") as outfile:
+                json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 def cmp_usb_sn(arg_sn):
@@ -153,29 +162,32 @@ def get_usb_identification():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor.")
     my_list.insert(0, "USB Identification")
-    for i in range(QueryInfoKey(query)[0]):
-        vid_pid = EnumKey(query, i)
-        if not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower():
-            continue
-        vid_pid_split = vid_pid.split("&")
-        usb_vid = vid_pid_split[0]
-        usb_pid = vid_pid_split[1]
-        query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB" + "\\" + vid_pid, 0)
-        for x in range(QueryInfoKey(query2)[0]):
-            serial_key = EnumKey(query2, x)
-            usb_device = cmp_usb_sn(serial_key)
-            if usb_device is None:
+    try:
+        for i in range(QueryInfoKey(query)[0]):
+            vid_pid = EnumKey(query, i)
+            if not "vid" in vid_pid.lower() and not "pid" in vid_pid.lower():
                 continue
-            timestamp = QueryInfoKey(query2)[2]
-            timestamp = dt_from_win32_ts(timestamp)
-            timestamp = convert_time(timestamp)
-            my_list.append({
-                "vid": str(usb_vid),
-                "pid": str(usb_pid),
-                "last modified": str(timestamp)
-            })
-        with open(filename, "w") as outfile:
-            json.dump(my_list, outfile, indent=4)
+            vid_pid_split = vid_pid.split("&")
+            usb_vid = vid_pid_split[0]
+            usb_pid = vid_pid_split[1]
+            query2 = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB" + "\\" + vid_pid, 0)
+            for x in range(QueryInfoKey(query2)[0]):
+                serial_key = EnumKey(query2, x)
+                usb_device = cmp_usb_sn(serial_key)
+                if usb_device is None:
+                    continue
+                timestamp = QueryInfoKey(query2)[2]
+                timestamp = dt_from_win32_ts(timestamp)
+                timestamp = convert_time(timestamp)
+                my_list.append({
+                    "vid": str(usb_vid),
+                    "pid": str(usb_pid),
+                    "last modified": str(timestamp)
+                })
+            with open(filename, "w") as outfile:
+                json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 # setupapi.dev.log
@@ -188,17 +200,20 @@ def get_first_time_setup():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
     my_list.insert(0, "First Time Setup")
-    winpath = os.environ["WINDIR"] + "\\INF\\"
-    with open(winpath + "setupapi.dev.log", "r") as log_file:
-        for line in log_file:
-            if "_??_USBSTOR#Disk&" in line or "_##_USBSTOR#Disk&" in line:
-                next_line = next(log_file)
-                my_list.append({
-                    "device install": str(line),
-                    "device install time": str(next_line)
-                })
-                with open(filename, "w") as outfile:
-                    json.dump(my_list, outfile, indent=4)
+    try:
+        winpath = os.environ["WINDIR"] + "\\INF\\"
+        with open(winpath + "setupapi.dev.log", "r") as log_file:
+            for line in log_file:
+                if "_??_USBSTOR#Disk&" in line or "_##_USBSTOR#Disk&" in line:
+                    next_line = next(log_file)
+                    my_list.append({
+                        "device install": str(line),
+                        "device install time": str(next_line)
+                    })
+                    with open(filename, "w") as outfile:
+                        json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 # User
@@ -213,13 +228,16 @@ def get_user():
     filename.parent.mkdir(exist_ok=True, parents=True)
     my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
     my_list.insert(0, "MountPoints")
-    for i in range(QueryInfoKey(query)[0]):
-        list_guid = EnumKey(query, i)
-        my_list.append({
-            "Device GUID": str(list_guid)
-        })
-        with open(filename, "w") as outfile:
-            json.dump(my_list, outfile, indent=4)
+    try:
+        for i in range(QueryInfoKey(query)[0]):
+            list_guid = EnumKey(query, i)
+            my_list.append({
+                "Device GUID": str(list_guid)
+            })
+            with open(filename, "w") as outfile:
+                json.dump(my_list, outfile, indent=4)
+    except:
+        pass
 
 
 # Volume Serial Number
