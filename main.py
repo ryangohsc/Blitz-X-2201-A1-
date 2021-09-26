@@ -86,7 +86,7 @@ def load_plugins():
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
-    plugins = return_included()
+    plugins = fnmatch.filter(plugins, "*py")
     print("[+] Loading plugins....")
     for plugin in plugins:
         print(plugin)
