@@ -9,7 +9,6 @@ from main import return_excluded, return_included, return_post
 import json
 from datetime import datetime
 
-
 ROOT = str(Path(__file__).parent.parent)
 
 
@@ -72,35 +71,234 @@ def homepage():
     """
     Generates index.html page
     """
-    homepage_title = "Blitz-X Home Page"
-    homepage_path = Path(ROOT + "/HTMLReport/index.html")
-    homepage_path.parent.mkdir(exist_ok=True, parents=True)
-    doc = dominate.document(title=str(homepage_title))
-    misc_menu_list = nav_misc_menu_list()
-    misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
-    usb_menu_list = nav_usb_menu_list()
-    usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
-    file_menu_list = nav_file_menu_list()
-    file_menu_list = [x.replace("json", "html") for x in file_menu_list]
-    others_menu_list = nav_others_menu_list()
-    others_menu_list = [x.replace("json", "html") for x in others_menu_list]
-    excluded_plugins = ", ".join(return_excluded())
-    included_plugins = ", ".join(return_included())
-    post_plugins = ", ".join(return_post())
-    if len(excluded_plugins) == 0:
-        excluded_plugins = "No plugins were excluded"
-    if len(included_plugins) == 0:
-        included_plugins = "No plugins were included"
-    if len(post_plugins) == 0:
-        post_plugins = "No plugins were used for post-processing"
-    with doc.head:
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        style("""\
+    try:
+        homepage_title = "Blitz-X Home Page"
+        homepage_path = Path(ROOT + "/HTMLReport/index.html")
+        homepage_path.parent.mkdir(exist_ok=True, parents=True)
+        doc = dominate.document(title=str(homepage_title))
+        misc_menu_list = nav_misc_menu_list()
+        misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+        usb_menu_list = nav_usb_menu_list()
+        usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+        file_menu_list = nav_file_menu_list()
+        file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        others_menu_list = nav_others_menu_list()
+        others_menu_list = [x.replace("json", "html") for x in others_menu_list]
+        excluded_plugins = ", ".join(return_excluded())
+        included_plugins = ", ".join(return_included())
+        post_plugins = ", ".join(return_post())
+        if len(excluded_plugins) == 0:
+            excluded_plugins = "No plugins were excluded"
+        if len(included_plugins) == 0:
+            included_plugins = "No plugins were included"
+        if len(post_plugins) == 0:
+            post_plugins = "No plugins were used for post-processing"
+        with doc.head:
+            meta(name="viewport", content="width=device-width, initial-scale=1.0")
+            style("""\
+                        html {
+                            font-family: Verdana;
+                            font-size: 12px;
+                            max-width: 100%;
+                            overflow-x: hidden;
+                        }
+                        .dropdown {
+                            float: left;
+                            overflow: hidden;
+                        }
+                        .navbar {
+                            overflow: hidden;
+                            background-color: #333;
+                        }
+                        .dropdown .dropbtn {
+                            font-size: 16px;
+                            border: none;
+                            outline: none;
+                            color: white;
+                            padding: 14px 16px;
+                            background-color: inherit;
+                            font-family: inherit;
+                            margin: 0;
+                        }
+                        .dropdown-content {
+                            display: none;
+                            position: absolute;
+                            background-color: #f9f9f9;
+                            min-width: 160px;
+                            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                            z-index: 1;
+                        }
+                        .dropdown-content a {
+                            float: none;
+                            color: black;
+                            padding: 12px 16px;
+                            text-decoration: none;
+                            display: block;
+                            text-align: left;
+                        }
+                        .dropdown:hover .dropdown-content {
+                            display: block;
+                        }
+                        .navbar a {
+                            float: left;
+                            font-size: 16px;
+                            color: white;
+                            text-align: center;
+                            padding: 14px 16px;
+                            text-decoration: none;
+                        }
+                        .dropdown-content a:hover {
+                            background-color: #ddd;
+                        }
+                        .dropdown-content a {
+                            float: none;
+                            color: black;
+                            padding: 12px 16px;
+                            text-decoration: none;
+                            display: block;
+                            text-align: left;
+                        }
+                        .navbar a:hover, .dropdown:hover .dropbtn {
+                            background-color: red;
+                        }
+                        """)
+        with doc:
+            nav_bar = div(cls="navbar")
+            with nav_bar:
+                a("Home", href="index.html")
+                dropdown = div(cls="dropdown")
+                with dropdown:
+                    button("Miscellaneous", cls="dropbtn")
+                with dropdown:
+                    dropdown_div = div(cls="dropdown-content")
+                    dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
+                dropdown = div(cls="dropdown")
+                with dropdown:
+                    button("External Device / USB", cls="dropbtn")
+                with dropdown:
+                    dropdown_div = div(cls="dropdown-content")
+                    dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
+                dropdown = div(cls="dropdown")
+                with dropdown:
+                    button("File Activity", cls="dropbtn")
+                with dropdown:
+                    dropdown_div = div(cls="dropdown-content")
+                    dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
+                dropdown = div(cls="dropdown")
+                with dropdown:
+                    button("Other Plugins", cls="dropbtn")
+                with dropdown:
+                    dropdown_div = div(cls="dropdown-content")
+                    dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
+            h1(homepage_title)
+            pre(" ######                              #     # \n"
+                " #     # #      # ##### ######        #   # \n"
+                " #     # #      #   #       #          # #  \n"
+                " ######  #      #   #      #   #####    #   \n"
+                " #     # #      #   #     #            # #  \n"
+                " #     # #      #   #    #            #   # \n"
+                " ######  ###### #   #   ######       #     # \n")
+            p("Blitz-X (Blitz-eXtractor) is a modular forensic triage tool written in Python designed to access "
+              "various forensic artifacts on Windows relating to user data exfiltration. ")
+            p("The tool will parse the artifacts, and present them in a format viable for analysis. ")
+            p("The output may provide valuable insights during an incident response in a Windows environment while "
+              "waiting for a full disk image to be acquired.")
+            p("The tool is meant to run on live systems on the offending User Account with administrative rights.")
+            p("This report was generated on: " + str(get_datetime()) + " Local Time.")
+            p("Modules that were loaded: " + included_plugins + ".")
+            p("Modules that were used for post-processing: " + post_plugins + ".")
+            p("Modules that were excluded are: " + excluded_plugins + ".")
+        with open(homepage_path, "w") as f:
+            f.write(doc.render(pretty=True))
+    except:
+        pass
+
+
+def get_json_files():
+    """
+    Returns all files in a list that resides in the data directory with a json extension
+    """
+    json_files = []
+    for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
+        for file in files:
+            json_files.append(os.path.join(root, file))
+    return json_files
+
+
+def get_json_title():
+    """
+    Returns all json file titles in the data directory in a list
+    """
+    json_title = []
+    for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
+        for file in files:
+            file = file[:-5]
+            json_title.append(file)
+    return json_title
+
+
+def json_to_html(args_dir):
+    """
+    Takes in the full pathname of the json file and converts it to html and returns it
+    """
+    with open(args_dir, "r") as f:
+        json_info = json.loads(f.read())
+        convert_json = json2html.convert(json=json_info)
+        convert_json = convert_json.replace("<ul>", "")
+        convert_json = convert_json.replace("</ui>", "")
+    return convert_json
+
+
+def html_template():
+    """
+    Generates a template in HTML
+    """
+    try:
+        misc_menu_list = nav_misc_menu_list()
+        misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+        usb_menu_list = nav_usb_menu_list()
+        usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+        file_menu_list = nav_file_menu_list()
+        file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        others_menu_list = nav_others_menu_list()
+        others_menu_list = [x.replace("json", "html") for x in others_menu_list]
+        json_files = get_json_files()
+        json_title = get_json_title()
+        for json_files, json_title in zip(json_files, json_title):
+            json_html = json_to_html(json_files)
+            doc = dominate.document(title=str(json_title))
+            with doc.head:
+                meta(name="viewport", content="width=device-width, initial-scale=1.0")
+                style("""\
+                    table {
+                        table-layout: fixed;
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 8px;
+                        margin-bottom: 8px;
+                    }
+                    td {
+                        width: 70%;
+                        word-wrap: break-word;
+                    }
+                    th {
+                        width:30%;
+                    }
+                    th, td {
+                        padding: 5px;
+                        text-align: left;
+                    }
+                    tr:nth-child(even) {
+                        background-color: #f2f2f2;
+                    }
                     html {
                         font-family: Verdana;
                         font-size: 12px;
                         max-width: 100%;
                         overflow-x: hidden;
+                    }
+                    ul, li {
+                        list-style-type: none;
                     }
                     .dropdown {
                         float: left;
@@ -162,236 +360,44 @@ def homepage():
                         background-color: red;
                     }
                     """)
-    with doc:
-        nav_bar = div(cls="navbar")
-        with nav_bar:
-            a("Home", href="index.html")
-            dropdown = div(cls="dropdown")
-            with dropdown:
-                button("Miscellaneous", cls="dropbtn")
-            with dropdown:
-                dropdown_div = div(cls="dropdown-content")
-                dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
-            dropdown = div(cls="dropdown")
-            with dropdown:
-                button("External Device / USB", cls="dropbtn")
-            with dropdown:
-                dropdown_div = div(cls="dropdown-content")
-                dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
-            dropdown = div(cls="dropdown")
-            with dropdown:
-                button("File Activity", cls="dropbtn")
-            with dropdown:
-                dropdown_div = div(cls="dropdown-content")
-                dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
-            dropdown = div(cls="dropdown")
-            with dropdown:
-                button("Other Plugins", cls="dropbtn")
-            with dropdown:
-                dropdown_div = div(cls="dropdown-content")
-                dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
-        h1(homepage_title)
-        pre(" ######                              #     # \n"
-            " #     # #      # ##### ######        #   # \n"
-            " #     # #      #   #       #          # #  \n"
-            " ######  #      #   #      #   #####    #   \n"
-            " #     # #      #   #     #            # #  \n"
-            " #     # #      #   #    #            #   # \n"
-            " ######  ###### #   #   ######       #     # \n")
-        p("Blitz-X (Blitz-eXtractor) is a modular forensic triage tool written in Python designed to access various "
-          "forensic artifacts on Windows relating to user data exfiltration. ")
-        p("The tool will parse the artifacts, and present them in a format viable for analysis. ")
-        p("The output may provide valuable insights during an incident response in a Windows environment while "
-          "waiting for a full disk image to be acquired.")
-        p("The tool is meant to run on live systems on the offending User Account with administrative rights.")
-        p("This report was generated on: " + str(get_datetime()) + " Local Time.")
-        p("Modules that were loaded: " + included_plugins + ".")
-        p("Modules that were used for post-processing: " + post_plugins + ".")
-        p("Modules that were excluded are: " + excluded_plugins + ".")
-    with open(homepage_path, "w") as f:
-        f.write(doc.render(pretty=True))
-
-
-def get_json_files():
-    """
-    Returns all files in a list that resides in the data directory with a json extension
-    """
-    json_files = []
-    for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
-        for file in files:
-            json_files.append(os.path.join(root, file))
-    return json_files
-
-
-def get_json_title():
-    """
-    Returns all json file titles in the data directory in a list
-    """
-    json_title = []
-    for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
-        for file in files:
-            file = file[:-5]
-            json_title.append(file)
-    return json_title
-
-
-def json_to_html(args_dir):
-    """
-    Takes in the full pathname of the json file and converts it to html and returns it
-    """
-    with open(args_dir, "r") as f:
-        json_info = json.loads(f.read())
-        convert_json = json2html.convert(json=json_info)
-        convert_json = convert_json.replace("<ul>", "")
-        convert_json = convert_json.replace("</ui>", "")
-    return convert_json
-
-
-def html_template():
-    """
-    Generates a template in HTML
-    """
-    misc_menu_list = nav_misc_menu_list()
-    misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
-    usb_menu_list = nav_usb_menu_list()
-    usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
-    file_menu_list = nav_file_menu_list()
-    file_menu_list = [x.replace("json", "html") for x in file_menu_list]
-    others_menu_list = nav_others_menu_list()
-    others_menu_list = [x.replace("json", "html") for x in others_menu_list]
-    json_files = get_json_files()
-    json_title = get_json_title()
-    for json_files, json_title in zip(json_files, json_title):
-        json_html = json_to_html(json_files)
-        doc = dominate.document(title=str(json_title))
-        with doc.head:
-            meta(name="viewport", content="width=device-width, initial-scale=1.0")
-            style("""\
-                table {
-                    table-layout: fixed;
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 8px;
-                    margin-bottom: 8px;
-                }
-                td {
-                    width: 70%;
-                    word-wrap: break-word;
-                }
-                th {
-                    width:30%;
-                }
-                th, td {
-                    padding: 5px;
-                    text-align: left;
-                }
-                tr:nth-child(even) {
-                    background-color: #f2f2f2;
-                }
-                html {
-                    font-family: Verdana;
-                    font-size: 12px;
-                    max-width: 100%;
-                    overflow-x: hidden;
-                }
-                ul, li {
-                    list-style-type: none;
-                }
-                .dropdown {
-                    float: left;
-                    overflow: hidden;
-                }
-                .navbar {
-                    overflow: hidden;
-                    background-color: #333;
-                }
-                .dropdown .dropbtn {
-                    font-size: 16px;
-                    border: none;
-                    outline: none;
-                    color: white;
-                    padding: 14px 16px;
-                    background-color: inherit;
-                    font-family: inherit;
-                    margin: 0;
-                }
-                .dropdown-content {
-                    display: none;
-                    position: absolute;
-                    background-color: #f9f9f9;
-                    min-width: 160px;
-                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                    z-index: 1;
-                }
-                .dropdown-content a {
-                    float: none;
-                    color: black;
-                    padding: 12px 16px;
-                    text-decoration: none;
-                    display: block;
-                    text-align: left;
-                }
-                .dropdown:hover .dropdown-content {
-                    display: block;
-                }
-                .navbar a {
-                    float: left;
-                    font-size: 16px;
-                    color: white;
-                    text-align: center;
-                    padding: 14px 16px;
-                    text-decoration: none;
-                }
-                .dropdown-content a:hover {
-                    background-color: #ddd;
-                }
-                .dropdown-content a {
-                    float: none;
-                    color: black;
-                    padding: 12px 16px;
-                    text-decoration: none;
-                    display: block;
-                    text-align: left;
-                }
-                .navbar a:hover, .dropdown:hover .dropbtn {
-                    background-color: red;
-                }
-                """)
-        with doc:
-            nav_bar = div(cls="navbar")
-            with nav_bar:
-                a("Home", href="index.html")
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("Miscellaneous", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("External Device / USB", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("File Activity", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
-                dropdown = div(cls="dropdown")
-                with dropdown:
-                    button("Other Plugins", cls="dropbtn")
-                with dropdown:
-                    dropdown_div = div(cls="dropdown-content")
-                    dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
-            h1(json_title)
-            with div():
-                raw(json_html)
-        filename = Path(ROOT + "/HTMLReport/" + json_title + ".html")
-        filename.parent.mkdir(exist_ok=True, parents=True)
-        with open(filename, "w") as f:
-            f.write(doc.render(pretty=True))
+            with doc:
+                nav_bar = div(cls="navbar")
+                with nav_bar:
+                    a("Home", href="index.html")
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Miscellaneous", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(misc_menu_list, href=misc_menu_list) for misc_menu_list in misc_menu_list)
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("External Device / USB", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(usb_menu_list, href=usb_menu_list) for usb_menu_list in usb_menu_list)
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("File Activity", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Other Plugins", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(
+                            a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
+                h1(json_title)
+                with div():
+                    raw(json_html)
+            filename = Path(ROOT + "/HTMLReport/" + json_title + ".html")
+            filename.parent.mkdir(exist_ok=True, parents=True)
+            with open(filename, "w") as f:
+                f.write(doc.render(pretty=True))
+    except:
+        pass
 
 
 def run():
