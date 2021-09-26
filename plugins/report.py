@@ -56,6 +56,14 @@ def nav_file_menu_list():
     return file_menu
 
 
+def nav_keyword_menu_list():
+    """
+    Returns a list of files that is in the keyword search category
+    """
+    keyword_menu = get_files(str(Path(ROOT + "/data/**/")), "/keyword_search*")
+    return keyword_menu
+
+
 def nav_others_menu_list():
     """
     Returns a list of files that is in the others category
@@ -64,12 +72,13 @@ def nav_others_menu_list():
     others_menu = [m for m in others_menu if m not in nav_misc_menu_list()]
     others_menu = [m for m in others_menu if m not in nav_usb_menu_list()]
     others_menu = [m for m in others_menu if m not in nav_file_menu_list()]
+    others_menu = [m for m in others_menu if m not in nav_keyword_menu_list()]
     return others_menu
 
 
 def homepage():
     """
-    Generates index.html page
+    Generates index.html page, it will only execute when ran from main.py
     """
     try:
         homepage_title = "Blitz-X Home Page"
@@ -82,6 +91,8 @@ def homepage():
         usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
         file_menu_list = nav_file_menu_list()
         file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        keyword_menu_list = nav_keyword_menu_list()
+        keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
         others_menu_list = nav_others_menu_list()
         others_menu_list = [x.replace("json", "html") for x in others_menu_list]
         excluded_plugins = ", ".join(return_excluded())
@@ -186,12 +197,18 @@ def homepage():
                     dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
                 dropdown = div(cls="dropdown")
                 with dropdown:
+                    button("Keyword Search", cls="dropbtn")
+                with dropdown:
+                    dropdown_div = div(cls="dropdown-content")
+                    dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
+                dropdown = div(cls="dropdown")
+                with dropdown:
                     button("Other Plugins", cls="dropbtn")
                 with dropdown:
                     dropdown_div = div(cls="dropdown-content")
                     dropdown_div.add(a(others_menu_list, href=others_menu_list) for others_menu_list in others_menu_list)
             h1(homepage_title)
-            pre(" ######                              #     # \n"
+            pre("\n ######                              #     # \n"
                 " #     # #      # ##### ######        #   # \n"
                 " #     # #      #   #       #          # #  \n"
                 " ######  #      #   #      #   #####    #   \n"
@@ -204,6 +221,7 @@ def homepage():
             p("The output may provide valuable insights during an incident response in a Windows environment while "
               "waiting for a full disk image to be acquired.")
             p("The tool is meant to run on live systems on the offending User Account with administrative rights.")
+            hr()
             p("This report was generated on: " + str(get_datetime()) + " Local Time.")
             p("Modules that were loaded: " + included_plugins + ".")
             p("Modules that were used for post-processing: " + post_plugins + ".")
@@ -260,6 +278,8 @@ def html_template():
         usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
         file_menu_list = nav_file_menu_list()
         file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        keyword_menu_list = nav_keyword_menu_list()
+        keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
         others_menu_list = nav_others_menu_list()
         others_menu_list = [x.replace("json", "html") for x in others_menu_list]
         json_files = get_json_files()
@@ -382,6 +402,12 @@ def html_template():
                     with dropdown:
                         dropdown_div = div(cls="dropdown-content")
                         dropdown_div.add(a(file_menu_list, href=file_menu_list) for file_menu_list in file_menu_list)
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Keyword Search", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
                     dropdown = div(cls="dropdown")
                     with dropdown:
                         button("Other Plugins", cls="dropbtn")
