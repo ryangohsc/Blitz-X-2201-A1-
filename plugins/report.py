@@ -317,7 +317,6 @@ def html_template():
                     }
                     td {
                         width: 70%;
-                        word-wrap: break-word;
                     }
                     th {
                         width:30%;
@@ -325,6 +324,7 @@ def html_template():
                     th, td {
                         padding: 5px;
                         text-align: left;
+                        word-wrap: break-word;
                     }
                     tr:nth-child(even) {
                         background-color: #f2f2f2;
