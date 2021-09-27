@@ -86,15 +86,20 @@ def homepage():
         homepage_path.parent.mkdir(exist_ok=True, parents=True)
         doc = dominate.document(title=str(homepage_title))
         misc_menu_list = nav_misc_menu_list()
-        misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+        if misc_menu_list:
+            misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
         usb_menu_list = nav_usb_menu_list()
-        usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+        if usb_menu_list:
+            usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
         file_menu_list = nav_file_menu_list()
-        file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        if file_menu_list:
+            file_menu_list = [x.replace("json", "html") for x in file_menu_list]
         keyword_menu_list = nav_keyword_menu_list()
-        keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
+        if keyword_menu_list:
+            keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
         others_menu_list = nav_others_menu_list()
-        others_menu_list = [x.replace("json", "html") for x in others_menu_list]
+        if others_menu_list:
+            others_menu_list = [x.replace("json", "html") for x in others_menu_list]
         excluded_plugins = ", ".join(return_excluded())
         included_plugins = ", ".join(return_included())
         post_plugins = ", ".join(return_post())
@@ -281,15 +286,20 @@ def html_template():
     """
     try:
         misc_menu_list = nav_misc_menu_list()
-        misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
+        if misc_menu_list:
+            misc_menu_list = [x.replace("json", "html") for x in misc_menu_list]
         usb_menu_list = nav_usb_menu_list()
-        usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
+        if usb_menu_list:
+            usb_menu_list = [x.replace("json", "html") for x in usb_menu_list]
         file_menu_list = nav_file_menu_list()
-        file_menu_list = [x.replace("json", "html") for x in file_menu_list]
+        if file_menu_list:
+            file_menu_list = [x.replace("json", "html") for x in file_menu_list]
         keyword_menu_list = nav_keyword_menu_list()
-        keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
+        if keyword_menu_list:
+            keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
         others_menu_list = nav_others_menu_list()
-        others_menu_list = [x.replace("json", "html") for x in others_menu_list]
+        if others_menu_list:
+            others_menu_list = [x.replace("json", "html") for x in others_menu_list]
         json_files = get_json_files()
         json_title = get_json_title()
         for json_files, json_title in zip(json_files, json_title):
