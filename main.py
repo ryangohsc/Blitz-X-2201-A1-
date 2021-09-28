@@ -120,7 +120,7 @@ def run_plugins(plugin_path, plugins):
             module = importlib.import_module(plugin_path)
             module.run()
             print("\t[+] Running {}".format(plugin))
-    print("\n[!] Plugins successfully executed!")
+    print("[!] Plugins successfully executed!")
 
 
 def export_pvt_key(pvt_key, filename, password):
@@ -138,20 +138,21 @@ def export_pub_key(public_key1, filename):
 def generate_rsa_key():
     keypair = RSA.generate(2048)
     public_key = keypair.publickey()
+    password = input("[+] Enter a password to encrypt the private key: ")
     export_pub_key(public_key, 'public_key.pem')
+    export_pvt_key(keypair, 'private_key.pem', password)
     print("[!] RSA key successfully generated!")
 
 
 def locate_public_key():
-    dir_files = os.listdir(get_project_root())
-    pem_file = fnmatch.filter(dir_files, "*pem")
+    pem_file = fnmatch.filter(os.listdir(get_project_root()), "*pem")
     if len(pem_file) == 0:
         generate_rsa_key()
-    elif len(pem_file) > 1:
-        print("[!] Error! Only one public key is allowed to be in the directory!")
+    pem_file = fnmatch.filter(os.listdir(get_project_root()), "*pem")
+    if "public_key.pem" not in pem_file:
+        print("[!] Error! Ensure that public key file is named as 'public_key.pem'")
         exit(-1)
-    pem_file = fnmatch.filter(dir_files, "*pem")
-    return pem_file[0]
+    return "public_key.pem"
 
 
 def import_pub_key(pub_key_path):
@@ -175,7 +176,6 @@ def generate_sha256_hash(filename):
 
 
 def encrypt_masterhash(pub_key_path):
-    # try:
     # Import the public key
     public_key = RSA.import_key(open(pub_key_path).read())
 
@@ -225,8 +225,6 @@ def encrypt_masterhash(pub_key_path):
 
     # Remove the original master hash txt file
     os.remove(input_filename)
-    # except FileNotFoundError:
-    #     print("[!] Error unable to open public key file!")
     return
 
 
@@ -272,6 +270,16 @@ def decrypt_masterhash(pvt_key_path):
     # Generate the SHA256 hash of the masterhash file
     sha256_hash = generate_sha256_hash(output_filename)
 
+    # Close file handles
+    file_in.close()
+    file_hash_in.close()
+    file_key_in.close()
+    file_out.close()
+
+    # Cleanup bin files
+    bin_file = fnmatch.filter(os.listdir(get_project_root()), "*bin")
+    for item in bin_file:
+        os.remove(item)
     print(dec_hash)
     print(sha256_hash)
 
