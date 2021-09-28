@@ -103,7 +103,9 @@ def load_plugins():
 def run_plugins(plugin_path, plugins):
     print("[*] Running plugins!")
     for plugin in plugins:
-        if plugin in EXCLUDED_PLUGINS or plugin in POST_PROCESSING_PLUGINS:
+        if plugin in EXCLUDED_PLUGINS:
+            pass
+        elif plugin in POST_PROCESSING_PLUGINS:
             pass
         else:
             plugin_name = plugin[:-3]
@@ -111,6 +113,7 @@ def run_plugins(plugin_path, plugins):
             module = importlib.import_module(plugin_path)
             module.run()
             print("\t[+] Running {}".format(plugin))
+    for plugin in plugins:
         if plugin in POST_PROCESSING_PLUGINS:
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
