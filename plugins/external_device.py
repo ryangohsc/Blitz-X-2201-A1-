@@ -347,8 +347,8 @@ def usb_activities():
         })
         with open(filename, "w") as outfile:
             json.dump(my_list, outfile, indent=4)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 
 def run():
