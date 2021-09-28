@@ -51,7 +51,8 @@ def get_known_usb():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_known_usb.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKLM USBStor data from registry.")
+    my_list.insert(0, "This module gets HKLM USBStor data from registry. Identify unique USB device plugged into the "
+                      "machine.")
     my_list.insert(0, "Drive Letter & Volume Name")
     try:
         query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
@@ -90,7 +91,8 @@ def get_mounted_devices():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_mounted_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKLM MountedDevices data from registry.")
+    my_list.insert(0, "This module gets HKLM MountedDevices data from registry. Examine drive letters looking at "
+                      "value data looking for serial number.")
     my_list.insert(0, "Mounted Devices")
     try:
         for i in range(QueryInfoKey(query)[1]):
@@ -114,7 +116,8 @@ def get_portable_devices():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_portable_devices.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry.")
+    my_list.insert(0, "This module gets HKLM Windows Portable Devices data from registry. Examine drive letters "
+                      "looking at value data looking for serial number.")
     my_list.insert(0, "Windows Portable Devices")
     try:
         for i in range(QueryInfoKey(query)[0]):
@@ -160,7 +163,8 @@ def get_usb_identification():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_identification.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor.")
+    my_list.insert(0, "This module gets HKLM USB from the registry and compares with USBStor. Shows the vendor, "
+                      "product and the last time the key was modified.")
     my_list.insert(0, "USB Identification")
     try:
         for i in range(QueryInfoKey(query)[0]):
@@ -198,7 +202,8 @@ def get_first_time_setup():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_first_time_setup_interest.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it.")
+    my_list.insert(0, "This module gets setupapi.dev.log from the system INF folder and filters it. This module tells "
+                      "highlights the first setup time of install of the device.")
     my_list.insert(0, "First Time Setup")
     try:
         winpath = os.environ["WINDIR"] + "\\INF\\"
@@ -226,13 +231,22 @@ def get_user():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_user.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user.")
+    my_list.insert(0, "This module gets HKCU MountPoints from the registry of the current user. GUID will be used "
+                      "next to identify the user that plugged in the device. The last write time of this key also "
+                      "corresponds to the last time the device was plugged into the machine by that user. The number "
+                      "will be referenced in the user’s personal mountpoints key in  the NTUSER.DAT Hive.")
     my_list.insert(0, "MountPoints")
     try:
         for i in range(QueryInfoKey(query)[0]):
             list_guid = EnumKey(query, i)
+            query2 = OpenKey(HKEY_CURRENT_USER,
+                             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2" + "\\" + list_guid, 0)
+            timestamp = QueryInfoKey(query2)[2]
+            timestamp = dt_from_win32_ts(timestamp)
+            timestamp = convert_time(timestamp)
             my_list.append({
-                "Device GUID": str(list_guid)
+                "Device GUID": str(list_guid),
+                "last modified": str(timestamp)
             })
             with open(filename, "w") as outfile:
                 json.dump(my_list, outfile, indent=4)
@@ -250,7 +264,8 @@ def get_vol_sn():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_vol_sn_emdmgmt.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number.")
+    my_list.insert(0, "This module gets HKLM EMDMgmt data from registry for volume serial number. Note: Not all "
+                      "devices have Windows Media Ready Boost enabled by default especially devices with SSDs.")
     my_list.insert(0, "External Memory Device Management")
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt", 0)
@@ -303,11 +318,10 @@ def usb_activities():
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_sys_event.json")
     filename.parent.mkdir(exist_ok=True, parents=True)
-    my_list.insert(0, "This module gets events from the system event.")
+    my_list.insert(0, "This module gets USB install events from the system event logs.")
     my_list.insert(0, "System event log")
     try:
-        # event_file = os.environ["WINDIR"] + "\\System32\\winevt\\Logs\\System.evtx"
-        event_file = str(Path(os.environ["WINDIR"] + "/System32/winevt/Logs/System.evtx"))
+        event_file = str(Path(Path.home().drive + "/Windows/System32/winevt/Logs/System.evtx"))
         with open(event_file, "r") as f:
             with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as buf:
                 fh = FileHeader(buf, 0x0)
@@ -329,7 +343,7 @@ def usb_activities():
                             json.dump(my_list, outfile, indent=4)
     except FileNotFoundError:
         my_list.append({
-            "not found": "Unable to find the registry key. EMDMgmt is probably not enabled by default"
+            "not found": "Unable to find system event log"
         })
         with open(filename, "w") as outfile:
             json.dump(my_list, outfile, indent=4)
