@@ -9,7 +9,7 @@ import os
 from plugins.lnkfiles import Lnkfile
 import json
 from pathlib import Path
-from main import get_project_root
+from main import convert_time, get_project_root
 
 CURRENT_USER_PROFILE = os.environ['USERPROFILE']
 JUMPLISTS_DIRECTORY = r"{}\\AppData\\Roaming\\Microsoft\\Windows\\Recent\\AutomaticDestinations".format(CURRENT_USER_PROFILE)
@@ -32,18 +32,18 @@ def parse_jumplist_json(json_data, data):
 		pass
 
 	try:
-		lnk_file_obj.accessed_time = json_data['header']['accessed_time']
-	except KeyError:
+		lnk_file_obj.accessed_time = convert_time(json_data['header']['accessed_time'])
+	except (KeyError, AttributeError):
 		pass
 
 	try:
-		lnk_file_obj.creation_time = json_data['header']['creation_time']
-	except KeyError:
+		lnk_file_obj.creation_time = convert_time(json_data['header']['creation_time'])
+	except (KeyError, AttributeError):
 		pass
 
 	try:
-		lnk_file_obj.modified_time = json_data['header']['modified_time']
-	except KeyError:
+		lnk_file_obj.modified_time = convert_time(json_data['header']['modified_time'])
+	except (KeyError, AttributeError):
 		pass
 
 	try:

@@ -3,7 +3,7 @@ import os
 import fnmatch
 import json
 from pathlib import Path
-from main import get_project_root
+from main import convert_time, dt_from_win32_ts, get_project_root
 
 ROOT = str(get_project_root())
 
@@ -48,18 +48,18 @@ def parse_lnk_files(path, data, lnk_file):
 			pass
 
 		try:
-			lnk_file_obj.accessed_time = json_format['header']['accessed_time']
-		except KeyError:
+			lnk_file_obj.accessed_time = convert_time(json_format['header']['accessed_time'])
+		except (KeyError, AttributeError):
 			pass
 
 		try:
-			lnk_file_obj.creation_time = json_format['header']['creation_time']
-		except KeyError:
+			lnk_file_obj.creation_time = convert_time(json_format['header']['creation_time'])
+		except (KeyError, AttributeError):
 			pass
 
 		try:
-			lnk_file_obj.modified_time = json_format['header']['modified_time']
-		except KeyError:
+			lnk_file_obj.modified_time = convert_time(json_format['header']['modified_time'])
+		except (KeyError, AttributeError):
 			pass
 
 		try:
