@@ -180,31 +180,34 @@ def encrypt_masterhash(pub_key_path):
 def decrypt_masterhash(pvt_key_path):
     input_filename = 'master_hash.txt'
     input_filename_encrypted_hash = 'master_hash_sha256.bin'
-    file_in = open(input_filename, 'rb')
-    file_in_hash = open(input_filename_encrypted_hash, 'rb')
 
-    # try:
-    # Import the private key
-    password = input("[+] Enter passphrase: ")
-    pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
+    try:
+        file_in = open(input_filename, 'rb')
+        file_in_hash = open(input_filename_encrypted_hash, 'rb')
 
-    # Decrypt the encrypted hashfile
-    enc_hash = file_in_hash.read()
-    rsa_cipher = PKCS1_OAEP.new(pvt_key)
-    dec_hash = rsa_cipher.decrypt(enc_hash)
+        # Import the private key
+        password = input("[+] Enter passphrase: ")
+        pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
 
-    sha256_hash = hashlib.sha256()
-    with open(input_filename, "rb") as f:
-        # Read and update hash string value in blocks of 4K
-        for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-        sha256_hash = sha256_hash.hexdigest()
+        # Decrypt the encrypted hashfile
+        enc_hash = file_in_hash.read()
+        rsa_cipher = PKCS1_OAEP.new(pvt_key)
+        dec_hash = rsa_cipher.decrypt(enc_hash)
 
-    if dec_hash.decode() == sha256_hash:
-        print("[!] Hash verified! File was not tampered with!")
+        sha256_hash = hashlib.sha256()
+        with open(input_filename, "rb") as f:
+            # Read and update hash string value in blocks of 4K
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+            sha256_hash = sha256_hash.hexdigest()
 
-    else:
-        print("[!] Hash verification failure! File was tampered with!")
+        if dec_hash.decode() == sha256_hash:
+            print("[!] Hash verified! File was not tampered with!")
+
+        else:
+            print("[!] Hash verification failure! File was tampered with!")
+    except FileNotFoundError:
+        print("[!] Unable to open encrypted master hash file or master hash file or private key!")
 
 
 def print_banner():
