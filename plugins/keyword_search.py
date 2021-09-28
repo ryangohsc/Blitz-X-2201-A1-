@@ -11,8 +11,8 @@ OUTFILE = Path(ROOT + "/data/keyword_search/keyword_search.json")
 
 
 def dump_to_json(file_path, data):
-	with open(file_path, "w") as outfile:
-		json.dump(data, outfile, default=str, indent=4)
+    with open(file_path, "w") as outfile:
+        json.dump(data, outfile, default=str, indent=4)
 
 
 def run():
