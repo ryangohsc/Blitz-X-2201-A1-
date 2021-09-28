@@ -88,20 +88,22 @@ def parse_lnk_files(path, data, lnk_file):
 
 
 def get_lnk_file_data(lnk_file_path, title, description, outfile):
-	data = []
-	lnk_files = os.listdir(lnk_file_path)
-	lnk_files = fnmatch.filter(lnk_files, "*lnk")	
-	for lnk_file in lnk_files:
-		parse_lnk_files(lnk_file_path, data, lnk_file)
-	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
-	data.insert(0, description)
-	data.insert(0, title)
-	dump_to_json(outfile, data)
+	try:
+		data = []
+		WINDOWS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+		lnk_files = os.listdir(lnk_file_path)
+		lnk_files = fnmatch.filter(lnk_files, "*lnk")
+		for lnk_file in lnk_files:
+			parse_lnk_files(lnk_file_path, data, lnk_file)
+		data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
+		data.insert(0, description)
+		data.insert(0, title)
+		dump_to_json(outfile, data)
+	except FileNotFoundError:
+		pass
 
 
 def run():
-	WINDOWS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-	OFFICE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
 	get_lnk_file_data(WINDOWS_LNK_FILE_PATH, WINDOWS_TITLE, WINDOWS_DESCRIPTION, WINDOWS_OUTFILE)
 	get_lnk_file_data(OFFICE_LNK_FILE_PATH, OFFICE_TITLE, OFFICE_DESCRIPTION, OFFICE_OUTFILE)
 	

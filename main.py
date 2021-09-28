@@ -3,6 +3,7 @@ import os
 import fnmatch
 import importlib
 import hashlib
+import sys
 import time
 import warnings
 from dateutil import tz
@@ -88,6 +89,26 @@ def return_included():
     return plugin_list
 
 
+def cls():
+    """
+    helper function to clear screen
+    """
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def print_banner():
+    """
+    Prints a banner
+    """
+    print(" ######                              #     #")
+    print(" #     # #      # ##### ######        #   # ")
+    print(" #     # #      #   #       #          # #  ")
+    print(" ######  #      #   #      #   #####    #   ")
+    print(" #     # #      #   #     #            # #  ")
+    print(" #     # #      #   #    #            #   # ")
+    print(" ######  ###### #   #   ######       #     #")
+
+
 def load_plugins():
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
@@ -111,15 +132,15 @@ def run_plugins(plugin_path, plugins):
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
-            module.run()
             print("\t[+] Running {}".format(plugin))
+            module.run()
     for plugin in plugins:
         if plugin in POST_PROCESSING_PLUGINS:
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
-            module.run()
             print("\t[+] Running {}".format(plugin))
+            module.run()
     print("[!] Plugins successfully executed!")
 
 
@@ -145,13 +166,13 @@ def generate_rsa_key():
 
 
 def locate_public_key():
-    pem_file = fnmatch.filter(os.listdir(get_project_root()), "*pem")
+    pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if len(pem_file) == 0:
         generate_rsa_key()
-    pem_file = fnmatch.filter(os.listdir(get_project_root()), "*pem")
+    pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if "public_key.pem" not in pem_file:
         print("[!] Error! Ensure that public key file is named as 'public_key.pem'")
-        exit(-1)
+        sys.exit(-1)
     return "public_key.pem"
 
 
@@ -241,7 +262,16 @@ def decrypt_masterhash(pvt_key_path):
 
     # Import the private key
     password = input("[+] Enter passphrase: ")
-    pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
+    cls()
+    print_banner()
+    try:
+        pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
+    except FileNotFoundError:
+        print("[!] The private key: {} cannot be found!".format(pvt_key_path))
+        sys.exit(-1)
+    except ValueError:
+        print("[!] Incorrect Password!")
+        sys.exit(-1)
     rsa_cipher = PKCS1_OAEP.new(pvt_key)
 
     # Decrypt the AES key
@@ -277,24 +307,15 @@ def decrypt_masterhash(pvt_key_path):
     file_out.close()
 
     # Cleanup bin files
-    bin_file = fnmatch.filter(os.listdir(get_project_root()), "*bin")
+    bin_file = fnmatch.filter(os.listdir(os.getcwd()), "*bin")
     for item in bin_file:
         os.remove(item)
     print(dec_hash)
     print(sha256_hash)
-
-
-def print_banner():
-    """
-    Prints a banner
-    """
-    print(" ######                              #     #")
-    print(" #     # #      # ##### ######        #   # ")
-    print(" #     # #      #   #       #          # #  ")
-    print(" ######  #      #   #      #   #####    #   ")
-    print(" #     # #      #   #     #            # #  ")
-    print(" #     # #      #   #    #            #   # ")
-    print(" ######  ###### #   #   ######       #     #")
+    if dec_hash == sha256_hash:
+        print("[!] The hash matches! The file has not been tampered with!")
+    else:
+        print("[!] The hash does not match! The file might be potentially tampered!")
 
 
 def main():
@@ -305,8 +326,12 @@ def main():
         decrypt_masterhash(args.keydec)
 
     else:
-        public_key_path = locate_public_key()
         start_time = time.time()
+        print("-" * 50)
+        print_banner()
+        print("-" * 50)
+        public_key_path = locate_public_key()
+        cls()
         print("-" * 50)
         print_banner()
         print("-" * 50)
@@ -314,7 +339,7 @@ def main():
         run_plugins(plugin_path, plugins)
         encrypt_masterhash(public_key_path)
         print("\n[!] Total Time Elapsed: %s seconds" % (time.time() - start_time))
-    exit(-1)
+    sys.exit(-1)
 
 
 if __name__ == '__main__':

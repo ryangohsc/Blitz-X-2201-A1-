@@ -73,6 +73,7 @@ def parse_jumplist_json(json_data, data):
 
 def parse_jumplist_file(directory):
 	data = []
+	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
 	jumplists = os.listdir(directory)
 	for jumplist in jumplists:
 		jumplist_path = "{}\\{}".format(directory, jumplist)
@@ -93,8 +94,7 @@ def run():
 	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)
 	data.insert(0, DESCRIPTION)
 	data.insert(0, TITLE)
-	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-	dump_to_json(OUTFILE, data)	
+	dump_to_json(OUTFILE, data)
 
 
 if __name__ == "__main__":

@@ -39,39 +39,40 @@ def get_recentdoc_subkeys():
 
 
 def parse_mru(title, description):
-	data = []
-	key = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU")
-	sub_keys = get_recentdoc_subkeys()
-	for item in sub_keys:
-		item_path = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU\\{}".format(item)
-		key = OpenKey(HKEY_CURRENT_USER, item_path)
-		i = 0
-		while i < 20:
-			try:
-				value = EnumValue(key, i)[1]
-				pidl = shell.StringAsPIDL(value)
-				path = shell.SHGetPathFromIDList(pidl)
-				timestamp = QueryInfoKey(key)[2]
-				timestamp = dt_from_win32_ts(timestamp)
-				timestamp = convert_time(timestamp)
-				mru = Mru(timestamp, value)
-			except:
-				pass
-			data.append({
-				'regkey_last_modified_date'	: timestamp,
-				'path' 						: path
-			})
-			i += 1
-	data = sorted(data, key=lambda k: k['regkey_last_modified_date'], reverse=True)
-	data.insert(0, description)
-	data.insert(0, title)
-	return data
+	try:
+		data = []
+		sub_keys = get_recentdoc_subkeys()
+		OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+		for item in sub_keys:
+			item_path = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU\\{}".format(item)
+			key = OpenKey(HKEY_CURRENT_USER, item_path)
+			i = 0
+			while i < 20:
+				try:
+					value = EnumValue(key, i)[1]
+					pidl = shell.StringAsPIDL(value)
+					path = shell.SHGetPathFromIDList(pidl)
+					timestamp = QueryInfoKey(key)[2]
+					timestamp = dt_from_win32_ts(timestamp)
+					timestamp = convert_time(timestamp)
+					Mru(timestamp, value)
+				except:
+					pass
+				data.append({
+					'regkey_last_modified_date'	: timestamp,
+					'path' 						: path
+				})
+				i += 1
+		data = sorted(data, key=lambda k: k['regkey_last_modified_date'], reverse=True)
+		data.insert(0, description)
+		data.insert(0, title)
+		dump_to_json(OUTFILE, data)
+	except FileNotFoundError:
+		pass
 
 
 def run():
-	data = parse_mru(TITLE, DESCRIPTION)
-	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-	dump_to_json(OUTFILE, data)
+	parse_mru(TITLE, DESCRIPTION)
 
 
 if __name__ == "__main__":

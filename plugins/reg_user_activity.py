@@ -31,6 +31,7 @@ def dump_to_json(file_path, data):
 
 def get_reg_key_data(reg_key, title, description, outfile):
     data = []
+    RUN_ONCE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
     key = OpenKey(HKEY_CURRENT_USER, reg_key)
     i = 0
     try:
@@ -48,9 +49,6 @@ def get_reg_key_data(reg_key, title, description, outfile):
 
 
 def run():
-    RUN_ONCE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-    RUN_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
-    TYPED_PATH_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
     get_reg_key_data(RUN_ONCE_KEY, RUN_ONCE_TITLE, RUN_ONCE_DESCRIPTION, RUN_ONCE_OUTFILE)
     get_reg_key_data(RUN_KEY, RUN_TITLE, RUN_DESCRIPTION, RUN_OUTFILE)
     get_reg_key_data(TYPED_PATH_KEY, TYPED_PATH_TITLE, TYPED_PATH_DESCRIPTION, TYPED_PATH_OUTFILE)
