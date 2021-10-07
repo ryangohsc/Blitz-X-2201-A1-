@@ -68,13 +68,17 @@ def edge_Cookie_json():
             json.dump(list.__dict__, file, ensure_ascii=False)
             file.write('\n')
 
+def run():
+    Chrome_Cookie_json()
+    edge_Cookie_json()
+    firefox_Cookie_json()
+    write_Edgehistory_json()
+    write_Chromehistory_json()
+    write_Foxhistory_json()
+    Edgehistory_bookmark_json()
+    Chromehistory_bookmark_json()
+    Foxhistory_bookmark_json()
 
-Chrome_Cookie_json()
-edge_Cookie_json()
-firefox_Cookie_json()
-write_Edgehistory_json()
-write_Chromehistory_json()
-write_Foxhistory_json()
-Edgehistory_bookmark_json()
-Chromehistory_bookmark_json()
-Foxhistory_bookmark_json()
+
+if __name__ == "__main__":
+    run()
