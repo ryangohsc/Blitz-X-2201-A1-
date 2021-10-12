@@ -242,6 +242,7 @@ def homepage():
         with open(homepage_path, "w") as f:
             f.write(doc.render(pretty=True))
     except:
+        print("[!] index.html failed to generate")
         pass
 
 
