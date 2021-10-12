@@ -1,54 +1,60 @@
 import argparse
-import os
-import fnmatch
 import importlib
-import hashlib
 import sys
 import time
 import warnings
 from dateutil import tz
 from datetime import datetime, timedelta
 from pathlib import Path
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.Random import get_random_bytes
+from encryption import *
 
-
+# Global variables
 PLUGIN_PATH = "plugins"
-EXCLUDED_PLUGINS = []
-POST_PROCESSING_PLUGINS = ["keyword_search.py", "report.py", "zehash.py"]
-
-# Argparser
-parser = argparse.ArgumentParser(
-    description="Write the description of the tool here",
-    epilog="ICT2202 Assignment 1 Team Panzerwerfer"
-)
-requiredNamed = parser.add_argument_group("required arguments")
-parser.add_argument("-keydec", help="Imports a private key to decrypt the master hash file.")
-args = parser.parse_args()
-
+LOADED_PLUGINS = []
+POST_PROCESSING_PLUGINS = ["keyword_search.py", "report.py", "hash.py"]
 warnings.filterwarnings("ignore")
 WIN32_EPOCH = datetime(1601, 1, 1)
-BUFFER_SIZE = 1024 * 1024
+
+
+def init_argparser():
+    """"
+    Desc   :Initialise the arg parser.
+
+    Params :None
+    """
+    parser = argparse.ArgumentParser(
+        description="Write the description of the tool here",
+        epilog="ICT2202 Assignment 1 Team Panzerwerfer"
+    )
+    requiredNamed = parser.add_argument_group("required arguments")
+    parser.add_argument("-keydec", help="Imports a private key to decrypt the master hash file.")
+    args = parser.parse_args()
+    return args
 
 
 def get_project_root():
-    """
-    Returns project root directory
+    """"
+    Desc   :Returns the root directory of the application.
+
+    Params :None
     """
     return Path(__file__).parent
 
 
 def dt_from_win32_ts(timestamp):
-    """
-    Converts registry key timestamps to UTC
+    """"
+    Desc   :Converts registry key timestamps to UTC.
+
+    Params :None
     """
     return WIN32_EPOCH + timedelta(microseconds=timestamp // 10)
 
 
 def convert_time(args_utc):
-    """
-    Converts UTC to the timezone of the system and returns it
+    """"
+    Desc   :Converts UTC to the timezone of the system and returns it.
+
+    Params :args_utc - The timestamp in UTC to be converted.
     """
     from_zone = tz.tzutc()
     to_zone = tz.tzlocal()
@@ -58,23 +64,20 @@ def convert_time(args_utc):
     return convert_utc
 
 
-def return_excluded():
-    """
-    Returns the excluded plugins
-    """
-    return EXCLUDED_PLUGINS
-
-
 def return_post():
-    """
-    Returns the post-processing plugins
+    """"
+    Desc   :Returns the post-processing plugins.
+
+    Params :None.
     """
     return POST_PROCESSING_PLUGINS
 
 
 def return_included():
-    """
-    Returns the included plugins
+    """"
+    Desc   :Returns the included plugins.
+
+    Params :None.
     """
     plugin_list = []
     cwd = os.getcwd()
@@ -82,23 +85,24 @@ def return_included():
     plugins = os.listdir(plugin_path)
     plugins = fnmatch.filter(plugins, "*py")
     for plugin in plugins:
-        if plugin in EXCLUDED_PLUGINS:
-            pass
-        else:
-            plugin_list.append(plugin)
+        plugin_list.append(plugin)
     return plugin_list
 
 
 def cls():
-    """
-    helper function to clear screen
+    """"
+    Desc   :Helper function to clear screen.
+
+    Params :None.
     """
     os.system("cls" if os.name == "nt" else "clear")
 
 
 def print_banner():
-    """
-    Prints a banner
+    """"
+    Desc   :Prints a banner.
+
+    Params :None.
     """
     print(" ######                              #     #")
     print(" #     # #      # ##### ######        #   # ")
@@ -110,218 +114,56 @@ def print_banner():
 
 
 def load_plugins():
+    """"
+    Desc   :Loads plugins the plugins from the "plugin" folder.
+
+    Params :None.
+    """
     cwd = os.getcwd()
     plugin_path = "{}\\{}".format(cwd, PLUGIN_PATH)
     plugins = os.listdir(plugin_path)
     plugins = fnmatch.filter(plugins, "*py")
     print("[*] Loading plugins....")
     for plugin in plugins:
-        print(plugin)
+        if plugin in POST_PROCESSING_PLUGINS:
+            print(plugin)
+            plugins.remove(plugin)
     print("[!] Plugins successfully loaded!")
     return plugin_path, plugins
 
 
 def run_plugins(plugin_path, plugins):
+    """"
+    Desc   :Runs plugins from the "plugin" folder.
+
+    Params :plugin_path - The path to the "plugins" folder.
+            plugins - A list containing the names of the plugins from the "plugins" folder.
+    """
     print("[*] Running plugins!")
+    no_of_plugins = len(plugins)
     for plugin in plugins:
-        if plugin in EXCLUDED_PLUGINS:
-            pass
-        elif plugin in POST_PROCESSING_PLUGINS:
-            pass
-        else:
+        if plugin not in POST_PROCESSING_PLUGINS:
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
             print("\t[+] Running {}".format(plugin))
             module.run()
-    for plugin in plugins:
-        if plugin in POST_PROCESSING_PLUGINS:
-            plugin_name = plugin[:-3]
-            plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
-            module = importlib.import_module(plugin_path)
-            print("\t[+] Running {}".format(plugin))
-            module.run()
+    for plugin in POST_PROCESSING_PLUGINS:
+        plugin_name = plugin[:-3]
+        plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
+        module = importlib.import_module(plugin_path)
+        print("\t[+] Running {}".format(plugin))
+        module.run()
     print("[!] Plugins successfully executed!")
 
 
-def export_pvt_key(pvt_key, filename, password):
-    with open(filename, "wb") as file:
-        file.write(pvt_key.exportKey('PEM', password))
-    file.close()
-
-
-def export_pub_key(public_key1, filename):
-    with open(filename, "wb") as file:
-        file.write(public_key1.exportKey('PEM'))
-        file.close()
-
-
-def generate_rsa_key():
-    keypair = RSA.generate(2048)
-    public_key = keypair.publickey()
-    password = input("[+] Enter a password to encrypt the private key: ")
-    export_pub_key(public_key, 'public_key.pem')
-    export_pvt_key(keypair, 'private_key.pem', password)
-    print("[!] RSA key successfully generated!")
-
-
-def locate_public_key():
-    pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
-    if len(pem_file) == 0:
-        generate_rsa_key()
-    pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
-    if "public_key.pem" not in pem_file:
-        print("[!] Error! Ensure that public key file is named as 'public_key.pem'")
-        sys.exit(-1)
-    return "public_key.pem"
-
-
-def import_pub_key(pub_key_path):
-    try:
-        recipient_key = RSA.import_key(open(pub_key_path).read())
-        return recipient_key
-
-    except FileNotFoundError:
-        print("[!] Error unable to open public key file!")
-        return
-
-
-def generate_sha256_hash(filename):
-    sha256_hash = hashlib.sha256()
-    with open(filename, "rb") as f:
-        # Read and update hash string value in blocks of 4K
-        for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-        sha256_hash = sha256_hash.hexdigest()
-    return sha256_hash
-
-
-def encrypt_masterhash(pub_key_path):
-    # Import the public key
-    public_key = RSA.import_key(open(pub_key_path).read())
-
-    # Get the file handles
-    input_filename = 'master_hash.txt'
-    output_filename = 'master_hash.bin'
-    output_hash_filename = 'master_hash_sha256.bin'
-    output_aes_filename = 'aes.bin'
-    file_in = open(input_filename, 'rb')
-    file_out = open(output_filename, 'wb')
-    file_hash_out = open(output_hash_filename, 'wb')
-    file_key_out = open(output_aes_filename, 'wb')
-
-    # Generate AES cipher and cipher key
-    aes_key = get_random_bytes(32)
-    aes_cipher = AES.new(aes_key, AES.MODE_GCM)  # Create a cipher object to encrypt data
-    file_out.write(aes_cipher.nonce)  # Write out the nonce to the output file under the salt
-
-    # Export encrypted AES key
-    rsa_cipher = PKCS1_OAEP.new(public_key)
-    encrypted_key = rsa_cipher.encrypt(aes_key)
-    file_key_out.write(encrypted_key)
-
-    # Encrypt data
-    data = file_in.read(BUFFER_SIZE)  # Read in some of the file
-    while len(data) != 0:  # Check if we need to encrypt anymore data
-        encrypted_data = aes_cipher.encrypt(data)  # Encrypt the data we read
-        file_out.write(encrypted_data)  # Write the encrypted data to the output file
-        data = file_in.read(BUFFER_SIZE)  # Read some more of the file to see i
-
-    tag = aes_cipher.digest()  # Signal to the cipher that we are done and get the tag
-    file_out.write(tag)
-    print("[!] Master hash file successfully encrypted!")
-
-    # Generate the SHA256 hash of the masterhash file
-    sha256_hash = generate_sha256_hash(input_filename)
-    rsa_cipher = PKCS1_OAEP.new(public_key)
-    encrypted_hash = rsa_cipher.encrypt(sha256_hash.encode())
-    file_hash_out.write(encrypted_hash)
-    print("[!] Master hashfile's hash successfully encrypted!")
-
-    # Close file handles
-    file_in.close()
-    file_out.close()
-    file_hash_out.close()
-    file_key_out.close()
-
-    # Remove the original master hash txt file
-    os.remove(input_filename)
-    return
-
-
-def decrypt_masterhash(pvt_key_path):
-    # Get the file handles
-    input_filename = 'master_hash.bin'
-    input_hash_filename = 'master_hash_sha256.bin'
-    input_aes_filename = 'aes.bin'
-    output_filename = 'master_hash_decrypted.txt'
-    file_in = open(input_filename, 'rb')
-    file_hash_in = open(input_hash_filename, 'rb')
-    file_key_in = open(input_aes_filename, 'rb')
-    file_out = open(output_filename, 'wb')
-
-    # Import the private key
-    password = input("[+] Enter passphrase: ")
-    cls()
-    print_banner()
-    try:
-        pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
-    except FileNotFoundError:
-        print("[!] The private key: {} cannot be found!".format(pvt_key_path))
-        sys.exit(-1)
-    except ValueError:
-        print("[!] Incorrect Password!")
-        sys.exit(-1)
-    rsa_cipher = PKCS1_OAEP.new(pvt_key)
-
-    # Decrypt the AES key
-    enc_aes_key = file_key_in.read()
-    dec_aes_key = rsa_cipher.decrypt(enc_aes_key)
-    nonce = file_in.read(16)
-    aes_cipher = AES.new(dec_aes_key, AES.MODE_GCM, nonce=nonce)  # Create a cipher object to encrypt data
-
-    # Decrypt the encrypted hashfile
-    enc_hash = file_hash_in.read()
-    dec_hash = rsa_cipher.decrypt(enc_hash).decode()
-
-    # Decrypt the data
-    file_in_size = os.path.getsize(input_filename)
-    encrypted_data_size = file_in_size - 16 - 16
-
-    for _ in range(int(encrypted_data_size / BUFFER_SIZE)):
-        data = file_in.read(BUFFER_SIZE)
-        decrypted_data = aes_cipher.decrypt(data)
-        file_out.write(decrypted_data)
-    data = file_in.read(int(encrypted_data_size % BUFFER_SIZE))
-    decrypted_data = aes_cipher.decrypt(data)
-    file_out.write(decrypted_data)
-    file_out.close()
-
-    # Generate the SHA256 hash of the masterhash file
-    sha256_hash = generate_sha256_hash(output_filename)
-
-    # Close file handles
-    file_in.close()
-    file_hash_in.close()
-    file_key_in.close()
-    file_out.close()
-
-    # Cleanup bin files
-    bin_file = fnmatch.filter(os.listdir(os.getcwd()), "*bin")
-    for item in bin_file:
-        os.remove(item)
-    print(dec_hash)
-    print(sha256_hash)
-    if dec_hash == sha256_hash:
-        print("[!] The hash matches! The file has not been tampered with!")
-    else:
-        print("[!] The hash does not match! The file might be potentially tampered!")
-
-
 def main():
+    """"
+    Desc   :Main function.
+
+    Params :None.
     """
-    Main function
-    """
+    args = init_argparser()
     if args.keydec:
         decrypt_masterhash(args.keydec)
 
@@ -336,6 +178,7 @@ def main():
         print_banner()
         print("-" * 50)
         plugin_path, plugins = load_plugins()
+        print("[*] Running plugins!")
         run_plugins(plugin_path, plugins)
         encrypt_masterhash(public_key_path)
         print("\n[!] Total Time Elapsed: %s seconds" % (time.time() - start_time))

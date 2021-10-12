@@ -15,6 +15,11 @@ def dump_to_json(file_path, data):
         json.dump(data, outfile, default=str, indent=4)
 
 
+def recursive_search():
+    pass
+
+
+
 def run():
     choice = input("[+] Do you wish to run a keyword search? (y/n): ")
 

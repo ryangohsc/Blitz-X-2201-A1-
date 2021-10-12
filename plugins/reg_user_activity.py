@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from main import get_project_root
 
+# Global Variables
 ROOT = str(get_project_root())
 
 # Run Once 
@@ -25,11 +26,25 @@ TYPED_PATH_OUTFILE = Path(ROOT + "/data/reg_activity/file_activity_typed_paths.j
 
 
 def dump_to_json(file_path, data):
+    """"
+    Desc   :Dumps the data extracted to json format.
+
+    Params :file_path - The path of the file to dump the json data to.
+            data - The extracted data.
+    """
     with open(file_path, "w") as outfile:
         json.dump(data, outfile, default=str, indent=4)
 
 
 def get_reg_key_data(reg_key, title, description, outfile):
+    """"
+    Desc   :Gets the data from the registry key.
+
+    Params :reg_key - The registry key.
+            title - The title of the reg_user_activity_module.
+            description - The description of the reg_user_activity_module.
+            outfile - The outfile where the data will be exported to.
+    """
     data = []
     RUN_ONCE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
     key = OpenKey(HKEY_CURRENT_USER, reg_key)
@@ -49,6 +64,11 @@ def get_reg_key_data(reg_key, title, description, outfile):
 
 
 def run():
+    """"
+    Desc   :Runs the reg_user_activity module.
+
+    Params :None.
+    """
     get_reg_key_data(RUN_ONCE_KEY, RUN_ONCE_TITLE, RUN_ONCE_DESCRIPTION, RUN_ONCE_OUTFILE)
     get_reg_key_data(RUN_KEY, RUN_TITLE, RUN_DESCRIPTION, RUN_OUTFILE)
     get_reg_key_data(TYPED_PATH_KEY, TYPED_PATH_TITLE, TYPED_PATH_DESCRIPTION, TYPED_PATH_OUTFILE)
