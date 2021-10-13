@@ -114,13 +114,13 @@ def print_banner():
 
     Params :    None.
     """
-    print(print_white(" ######                              #     #"))
-    print(print_white(" #     # #      # ##### ######        #   # "))
-    print(print_white(" #     # #      #   #       #          # #  "))
-    print(print_white(" ######  #      #   #      #   #####    #   "))
-    print(print_white(" #     # #      #   #     #            # #  "))
-    print(print_white(" #     # #      #   #    #            #   # "))
-    print(print_white(" ######  ###### #   #   ######       #     #"))
+    print(" ######                              #     #")
+    print(" #     # #      # ##### ######        #   # ")
+    print(" #     # #      #   #       #          # #  ")
+    print(" ######  #      #   #      #   #####    #   ")
+    print(" #     # #      #   #     #            # #  ")
+    print(" #     # #      #   #    #            #   # ")
+    print(" ######  ###### #   #   ######       #     #")
 
 
 def load_plugins():
@@ -177,14 +177,14 @@ def main():
 
     else:
         start_time = time.time()
-        print(print_white("-" * 50))
+        print("-" * 50)
         print_banner()
-        print(print_white("-" * 50))
+        print("-" * 50)
         public_key_path = locate_public_key()
         cls()
-        print(print_white("-" * 50))
+        print("-" * 50)
         print_banner()
-        print(print_white("-" * 50))
+        print("-" * 50)
         plugin_path, plugins = load_plugins()
         run_plugins(plugin_path, plugins)
         encrypt_masterhash(public_key_path)

@@ -5,8 +5,8 @@ import sys
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
-from coloroma_colours import *
 from main import cls, print_banner
+from coloroma_colours import *
 
 # Global variables
 BUFFER_SIZE = 1024 * 1024

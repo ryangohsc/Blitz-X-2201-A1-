@@ -9,7 +9,7 @@ from main import convert_time, dt_from_win32_ts, get_project_root
 ROOT = str(get_project_root())
 TITLE = "Prefetch"
 DESCRIPTION = "This module parses the prefetch files on the target system."
-OUTFILE = Path(ROOT + "/data/prefetch/prefetch.json")
+OUTFILE = Path(ROOT + "/data/prefetch/file_activity_prefetch.json")
 OUTFILE.parent.mkdir(exist_ok=True, parents=True)
 
 
