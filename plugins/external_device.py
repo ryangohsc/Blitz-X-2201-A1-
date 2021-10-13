@@ -13,8 +13,10 @@ ROOT = str(get_project_root())
 
 
 def get_user_sid():
-    """
-    Returns a list user SIDs
+    """"
+    Desc   :    Returns a list user SIDs.
+
+    Params :    None
     """
     users = []
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList", 0)
@@ -29,8 +31,10 @@ def get_user_sid():
 
 
 def get_user_by_sid(sid):
-    """
-    Returns the username using the specified SID
+    """"
+    Desc   :Returns the username using the specified SID.
+
+    Params :sid - The user's SID.
     """
     users = get_user_sid()
     username = ""
@@ -45,8 +49,10 @@ def get_user_by_sid(sid):
 
 # Drive Letter and Volume Name
 def get_known_usb():
-    """
-    Produces known USB devices from HKLM USBStor
+    """"
+    Desc   :    Produces known USB devices from HKLM USBStor.
+
+    Params :    None.
     """
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_known_usb.json")
@@ -82,10 +88,11 @@ def get_known_usb():
 
 
 def get_mounted_devices():
-    """
-    SYSTEM/MountedDevices
-    Compare mounted_devices_data with DosDevices.
-    Take Volume{...} compare with get_user() to see if user plugged in the USB
+    """"
+    Desc   :    SYSTEM/MountedDevices, Compare mounted_devices_data with DosDevices.
+                Take Volume{...} compare with get_user() to see if user plugged in the USB.
+
+    Params :    None.
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\MountedDevices", 0)
     my_list = []
@@ -109,8 +116,10 @@ def get_mounted_devices():
 
 
 def get_portable_devices():
-    """
-    HKLM Windows Portable Devices
+    """"
+    Desc   :    HKLM Windows Portable Devices.
+
+    Params :    None.
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows Portable Devices\Devices", 0)
     my_list = []
@@ -137,8 +146,10 @@ def get_portable_devices():
 
 
 def cmp_usb_sn(arg_sn):
-    """
-    helper function do not include
+    """"
+    Desc   :    helper function do not include.
+
+    Params :    arg_sn -
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBStor", 0)
     for i in range(QueryInfoKey(query)[0]):
@@ -155,9 +166,10 @@ def cmp_usb_sn(arg_sn):
 
 # Key Identification
 def get_usb_identification():
-    """
-    HKLM USB
-    Will cross check with USBSTOR serial no
+    """"
+    Desc   :    HKLM USBm, Will cross check with USBSTOR serial no.
+
+    Params :    None.
     """
     query = OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB", 0)
     my_list = []
@@ -196,8 +208,10 @@ def get_usb_identification():
 
 # setupapi.dev.log
 def get_first_time_setup():
-    """
-    Gets first time setup log in setupapi.dev.log
+    """"
+    Desc   :    Gets first time setup log in setupapi.dev.log.
+
+    Params :    None.
     """
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_first_time_setup_interest.json")
@@ -223,9 +237,11 @@ def get_first_time_setup():
 
 # User
 def get_user():
-    """
-    Gets the current user inserted USB devices
-    If the device GUID correlates to the keys in the user, it shows that the device is used by the current user
+    """"
+    Desc   :    Gets the current user inserted USB devices. If the device GUID correlates to the keys in the user, it
+                shows that the device is used by the current user
+
+    Params :    None.
     """
     query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 0)
     my_list = []
@@ -256,10 +272,12 @@ def get_user():
 
 # Volume Serial Number
 def get_vol_sn():
-    """
-    Checks HKLM\EMDMgmt (External Memory Device Management)
-    Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
-    But still applicable to corporate devices nonetheless as of the time of writing.
+    """"
+    Desc   :    Checks HKLM\EMDMgmt (External Memory Device Management).
+                Not all devices have Windows Media Ready Boost enabled by default especially devices with SSDs.
+                But still applicable to corporate devices nonetheless as of the time of writing.
+
+    Params :    None.
     """
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_vol_sn_emdmgmt.json")
@@ -312,8 +330,10 @@ def get_vol_sn():
 
 # PnP Events
 def usb_activities():
-    """
-    Accesses the System event file and gets the specified EventID
+    """"
+    Desc   :    Accesses the System event file and gets the specified EventID.
+
+    Params :    None.
     """
     my_list = []
     filename = Path(ROOT + "/data/usb/usb_sys_event.json")
@@ -352,6 +372,11 @@ def usb_activities():
 
 
 def run():
+    """"
+    Desc   :    Runs the external_device module.
+
+    Params :    None.
+    """
     get_known_usb()
     get_mounted_devices()
     get_portable_devices()

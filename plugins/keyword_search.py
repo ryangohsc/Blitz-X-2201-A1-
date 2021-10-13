@@ -19,7 +19,6 @@ def recursive_search():
     pass
 
 
-
 def run():
     choice = input("[+] Do you wish to run a keyword search? (y/n): ")
 

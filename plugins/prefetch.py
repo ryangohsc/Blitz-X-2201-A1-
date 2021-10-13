@@ -15,10 +15,10 @@ OUTFILE.parent.mkdir(exist_ok=True, parents=True)
 
 def dump_to_json(file_path, data):
     """"
-    Desc   :Dumps the data extracted to json format.
+    Desc   :    Dumps the data extracted to json format.
 
-    Params :file_path - The path of the file to dump the json data to.
-            data - The extracted data.
+    Params :    file_path - The path of the file to dump the json data to.
+                data - The extracted data.
     """
     with open(file_path, "w") as outfile:
         json.dump(data, outfile, default=str, indent=4)
@@ -26,9 +26,9 @@ def dump_to_json(file_path, data):
 
 def parse_prefetch():
     """"
-    Desc   :Dumps the data extracted to json format.
+    Desc   :    Dumps the data extracted to json format.
 
-    Params :None.
+    Params :    None.
     """
     data = []
     prefetch_directory = r"C:\Windows\Prefetch"
@@ -56,9 +56,9 @@ def parse_prefetch():
 
 def run():
     """"
-    Desc   :Runs the prefetch module.
+    Desc   :    Runs the prefetch module.
 
-    Params :None.
+    Params :    None.
     """
     data = parse_prefetch()
     # data = sorted(data, key=lambda k: k['regkey_last_modified_date'], reverse=True)
@@ -69,31 +69,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-
-
-
-
-
-
-
-# for pf_file in prefetch_files:
-#     if pf_file[-2:] == "pf":
-#         full_path = prefetch_directory + r"\\" + pf_file
-#         first_executed = os.path.getctime(full_path)
-#         first_executed = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(first_executed))
-#
-#         last_executed = os.path.getmtime(full_path)
-#         last_executed = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_executed))
-#
-#         test = Prefetch(full_path)
-#         print(test.executableName)
-#         print(test.runCount)
-#         if len(test.timestamps) > 1:
-#             print("Last Executed:")
-#             for timestamp in test.timestamps:
-#                 print("    " + timestamp)
-#         else:
-#             print("Last Executed: {}".format(test.timestamps[0]))
-#
-

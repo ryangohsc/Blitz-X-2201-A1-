@@ -19,10 +19,10 @@ OUTFILE = Path(ROOT + "/data/jumplist/file_activity_jumplist.json")
 
 def dump_to_json(file_path, data):
 	""""
-	Desc   :Dumps the data extracted to json format.
+	Desc   :	Dumps the data extracted to json format.
 
-	Params :file_path - The path of the file to dump the json data to.
-			data - The extracted data.
+	Params :	file_path - The path of the file to dump the json data to.
+				data - The extracted data.
 	"""
 	with open(file_path, "w") as outfile:
 		json.dump(data, outfile, default=str, indent=4)
@@ -30,10 +30,10 @@ def dump_to_json(file_path, data):
 
 def parse_jumplist_json(json_data, data):
 	""""
-	Desc   :Parses the jumplist file.
+	Desc   :	Parses the jumplist file.
 
-	Params :json_data - The json data extracted from a jumplist.
-			data - A list to contain the data extracted from the jumplist.
+	Params :	json_data - The json data extracted from a jumplist.
+				data - A list to contain the data extracted from the jumplist.
 	"""
 	lnk_file_obj = LnkFile()
 	try:
@@ -83,9 +83,9 @@ def parse_jumplist_json(json_data, data):
 
 def parse_jumplist_file(directory):
 	""""
-	Desc   :Parses the jumplist file.
+	Desc   :	Parses the jumplist file.
 
-	Params :directory - Directory containing the jumplists.
+	Params :	directory - Directory containing the jumplists.
 	"""
 	data = []
 	OUTFILE.parent.mkdir(exist_ok=True, parents=True)
@@ -106,9 +106,9 @@ def parse_jumplist_file(directory):
 
 def run():
 	""""
-	Desc   :Runs the jumplist file module.
+	Desc   :	Runs the jumplist file module.
 
-	Params :None.
+	Params :	None.
 	"""
 	data = parse_jumplist_file(JUMPLISTS_DIRECTORY)
 	data = sorted(data, key=lambda k: k['accessed_time'], reverse=True)

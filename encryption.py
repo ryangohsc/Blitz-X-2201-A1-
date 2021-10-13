@@ -1,57 +1,93 @@
 import hashlib
 import fnmatch
 import os
+import sys
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
+from coloroma_colours import *
+from main import cls, print_banner
 
 # Global variables
 BUFFER_SIZE = 1024 * 1024
 
 
 def export_pvt_key(pvt_key, filename, password):
+    """"
+    Desc   :    Exports the private key to the file system.
+
+    Params :    pvt_key -
+                file_name -
+                password -
+    """
     with open(filename, "wb") as file:
         file.write(pvt_key.exportKey('PEM', password))
     file.close()
 
 
 def export_pub_key(public_key1, filename):
+    """"
+    Desc   :    Exports the public key to the file system.
+
+    Params :    public_key1 -
+                file_name -
+    """
     with open(filename, "wb") as file:
         file.write(public_key1.exportKey('PEM'))
         file.close()
 
 
 def generate_rsa_key():
+    """"
+    Desc   :    Generates a 2048-bit RSA key.
+
+    Params :    None.
+    """
     keypair = RSA.generate(2048)
     public_key = keypair.publickey()
     password = input("[+] Enter a password to encrypt the private key: ")
     export_pub_key(public_key, 'public_key.pem')
     export_pvt_key(keypair, 'private_key.pem', password)
-    print("[!] RSA key successfully generated!")
+    print(print_green("[!] RSA key successfully generated!"))
 
 
 def locate_public_key():
+    """"
+    Desc   :    Locates the presence of a public key on the file system.
+
+    Params :    None.
+    """
     pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if len(pem_file) == 0:
         generate_rsa_key()
     pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if "public_key.pem" not in pem_file:
-        print("[!] Error! Ensure that public key file is named as 'public_key.pem'")
+        print(print_red("[!] Error! Ensure that public key file is named as 'public_key.pem'"))
         sys.exit(-1)
     return "public_key.pem"
 
 
 def import_pub_key(pub_key_path):
+    """"
+    Desc   :    Locates the presence of a public key on the file system.
+
+    Params :    pub_key_path - Path of the public key on the file system.
+    """
     try:
         recipient_key = RSA.import_key(open(pub_key_path).read())
         return recipient_key
 
     except FileNotFoundError:
-        print("[!] Error unable to open public key file!")
+        print(print_red("[!] Error unable to open public key file!"))
         return
 
 
 def generate_sha256_hash(filename):
+    """"
+    Desc   :    Generates a sha256 hash of a file.
+
+    Params :    filename - The file to be hashed.
+    """
     sha256_hash = hashlib.sha256()
     with open(filename, "rb") as f:
         # Read and update hash string value in blocks of 4K
@@ -62,6 +98,11 @@ def generate_sha256_hash(filename):
 
 
 def encrypt_masterhash(pub_key_path):
+    """"
+    Desc   :    Encrypts the master hash file using AES.
+
+    Params :    pub_key_path - The path of the public key on the file system.
+    """
     # Import the public key
     public_key = RSA.import_key(open(pub_key_path).read())
 
@@ -94,14 +135,14 @@ def encrypt_masterhash(pub_key_path):
 
     tag = aes_cipher.digest()  # Signal to the cipher that we are done and get the tag
     file_out.write(tag)
-    print("[!] Master hash file successfully encrypted!")
+    print(print_green("[!] Master hash file successfully encrypted!"))
 
     # Generate the SHA256 hash of the masterhash file
     sha256_hash = generate_sha256_hash(input_filename)
     rsa_cipher = PKCS1_OAEP.new(public_key)
     encrypted_hash = rsa_cipher.encrypt(sha256_hash.encode())
     file_hash_out.write(encrypted_hash)
-    print("[!] Master hashfile's hash successfully encrypted!")
+    print(print_green("[!] Master hashfile's hash successfully encrypted!"))
 
     # Close file handles
     file_in.close()
@@ -115,6 +156,11 @@ def encrypt_masterhash(pub_key_path):
 
 
 def decrypt_masterhash(pvt_key_path):
+    """"
+    Desc   :    Decrypts the master hash file using AES.
+
+    Params :    pvt_key_path - The path of the private key on the file system.
+    """
     # Get the file handles
     input_filename = 'master_hash.bin'
     input_hash_filename = 'master_hash_sha256.bin'
@@ -126,16 +172,16 @@ def decrypt_masterhash(pvt_key_path):
     file_out = open(output_filename, 'wb')
 
     # Import the private key
-    password = input("[+] Enter passphrase: ")
+    password = input(print_yellow("[+] Enter passphrase: "))
     cls()
     print_banner()
     try:
         pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
     except FileNotFoundError:
-        print("[!] The private key: {} cannot be found!".format(pvt_key_path))
+        print(print_red("[!] The private key: {} cannot be found!".format(pvt_key_path)))
         sys.exit(-1)
     except ValueError:
-        print("[!] Incorrect Password!")
+        print(print_red("[!] Incorrect Password!"))
         sys.exit(-1)
     rsa_cipher = PKCS1_OAEP.new(pvt_key)
 
@@ -178,6 +224,6 @@ def decrypt_masterhash(pvt_key_path):
     print(dec_hash)
     print(sha256_hash)
     if dec_hash == sha256_hash:
-        print("[!] The hash matches! The file has not been tampered with!")
+        print(print_red("[!] The hash matches! The file has not been tampered with!"))
     else:
-        print("[!] The hash does not match! The file might be potentially tampered!")
+        print(print_red("[!] The hash does not match! The file might be potentially tampered!"))

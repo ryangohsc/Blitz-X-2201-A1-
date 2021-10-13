@@ -14,10 +14,10 @@ OUTFILE = Path(ROOT + "/data/mru/file_activity_mru.json")
 
 def dump_to_json(file_path, data):
 	""""
-	Desc   :Dumps the data extracted to json format.
+	Desc   :	Dumps the data extracted to json format.
 
-	Params :file_path - The path of the file to dump the json data to.
-			data - The extracted data.
+	Params :	file_path - The path of the file to dump the json data to.
+				data - The extracted data.
 	"""
 	with open(file_path, "w") as outfile:
 		json.dump(data, outfile, default=str, indent=4)
@@ -25,9 +25,9 @@ def dump_to_json(file_path, data):
 
 def get_openSavePidlMRU():
 	""""
-	Desc   :Gets the sub keys of the OpenSavePidlMRU key.
+	Desc   :	Gets the sub keys of the OpenSavePidlMRU key.
 
-	Params :None.
+	Params :	None.
 	"""
 	key = r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU"
 	sub_key_list = []
@@ -44,9 +44,9 @@ def get_openSavePidlMRU():
 
 def parse_mru():
 	""""
-	Desc   : Parses the MRU and extracts data from it.
+	Desc   :	Parses the MRU and extracts data from it.
 
-	Params :None.
+	Params :	None.
 	"""
 	try:
 		data = []
@@ -78,9 +78,9 @@ def parse_mru():
 
 def run():
 	""""
-	Desc   :Runs the MRU module.
+	Desc   :	Runs the MRU module.
 
-	Params :None.
+	Params :	None.
 	"""
 	data = parse_mru()
 	data = sorted(data, key=lambda k: k['regkey_last_modified_date'], reverse=True)

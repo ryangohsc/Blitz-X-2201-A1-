@@ -37,10 +37,10 @@ class LnkFile:
 
 def dump_to_json(file_path, data):
 	""""
-	Desc   :Dumps the data extracted to json format.
+	Desc   :	Dumps the data extracted to json format.
 
-	Params :file_path - The path of the file to dump the json data to.
-			data - The extracted data.
+	Params :	file_path - The path of the file to dump the json data to.
+				data - The extracted data.
 	"""
 	with open(file_path, "w") as outfile:
 		json.dump(data, outfile, default=str, indent=4)
@@ -48,11 +48,11 @@ def dump_to_json(file_path, data):
 
 def parse_lnk_files(path, data, lnk_file):
 	""""
-	Desc   :Parses the lnk file.
+	Desc   :	Parses the lnk file.
 
-	Params :path - The path of the lnk file.
-			data - A list to contain the data extracted from the lnk file.
-			lnk_file - The lnk file itself.
+	Params :	path - The path of the lnk file.
+				data - A list to contain the data extracted from the lnk file.
+				lnk_file - The lnk file itself.
 	"""
 	current_lnk_file = '{}\\{}'.format(path, lnk_file)
 	with open(current_lnk_file, 'rb') as indata:
@@ -107,12 +107,12 @@ def parse_lnk_files(path, data, lnk_file):
 
 def get_lnk_file_data(lnk_files_path, title, description, outfile):
 	""""
-	Desc   :Parses, extracts and dumps information extracted from lnk files.
+	Desc   :	Parses, extracts and dumps information extracted from lnk files.
 
-	Params :lnk_files_path - The directory containing lnk files.
-			title - The title of the lnk file module.
-			description - The description of the lnk file module.
-			outfile - The directory of the file to dump data extracted from the lnk files.
+	Params :	lnk_files_path - The directory containing lnk files.
+				title - The title of the lnk file module.
+				description - The description of the lnk file module.
+				outfile - The directory of the file to dump data extracted from the lnk files.
 	"""
 	try:
 		data = []
@@ -131,9 +131,9 @@ def get_lnk_file_data(lnk_files_path, title, description, outfile):
 
 def run():
 	""""
-	Desc   :Runs the lnk file module.
+	Desc   :	Runs the lnk file module.
 
-	Params :None.
+	Params :	None.
 	"""
 	get_lnk_file_data(WINDOWS_LNK_FILE_PATH, WINDOWS_TITLE, WINDOWS_DESCRIPTION, WINDOWS_OUTFILE)
 	get_lnk_file_data(OFFICE_LNK_FILE_PATH, OFFICE_TITLE, OFFICE_DESCRIPTION, OFFICE_OUTFILE)

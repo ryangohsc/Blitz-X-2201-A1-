@@ -1,83 +1,188 @@
-#important module to install
-#pip install browser-history
-#pip3 install browser-cookie3
-
-#importing module
 import json
 import browser_cookie3
+from browser_history.browsers import Edge
+from browser_history.browsers import Chrome
+from browser_history.browsers import Firefox
+from pathlib import Path
+from main import get_project_root
 
-def write_Edgehistory_json():
-    from browser_history.browsers import Edge
-    f = Edge()
+# Global Variables
+ROOT = str(get_project_root())
+
+# History
+CHROME_HISTORY_TITLE = "Chrome History"
+CHROME_HISTORY_DESC = "Chrome history."
+CHROME_HISTORY_OUTFILE = Path(ROOT + "/data/browser_history/chrome_history.json")
+CHROME_HISTORY_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+FIREFOX_HISTORY_TITLE = "Firefox History"
+FIREFOX_HISTORY_DESC = "Firefox history."
+FIREFOX_HISTORY_OUTFILE = Path(ROOT + "/data/browser_history/firefox_history.json")
+FIREFOX_HISTORY_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+EDGE_HISTORY_TITLE =  "Edge History"
+EDGE_HISTORY_DESC =  "Edge history."
+EDGE_HISTORY_OUTFILE = Path(ROOT + "/data/browser_history/edge_history.json")
+EDGE_HISTORY_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+# Cookies
+CHROME_COOKIE_TITLE = "Chrome Cookies"
+CHROME_COOKIE_DESC = "Chrome cookies."
+CHROME_COOKIE_OUTFILE = Path(ROOT + "/data/browser_history/chrome_cookie.json")
+CHROME_COOKIE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+FIREFOX_COOKIE_TITLE = "Firefox Cookies"
+FIREFOX_COOKIE_DESC = "Firefox cookies."
+FIREFOX_COOKIE_OUTFILE = Path(ROOT + "/data/browser_history/firefox_cookie.json")
+FIREFOX_COOKIE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+EDGE_COOKIE_TITLE = "Edge Cookies"
+EDGE_COOKIE_DESC = "Edge cookies."
+EDGE_COOKIE_OUTFILE = Path(ROOT + "/data/browser_history/edge_cookie.json")
+EDGE_COOKIE_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+# Bookmarks
+CHROME_BOOKMARKS_TITLE = "Chrome Bookmarks"
+CHROME_BOOKMARKS_DESC = "Chrome bookmarks."
+CHROME_BOOKMARKS_OUTFILE = Path(ROOT + "/data/browser_history/chrome_bookmarks.json")
+CHROME_BOOKMARKS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+FIREFOX_BOOKMARKS_TITLE = "Firefox Bookmarks"
+FIREFOX_BOOKMARKS_DESC = "Firefox bookmarks."
+FIREFOX_BOOKMARKS_OUTFILE = Path(ROOT + "/data/browser_history/firefox_bookmarks.json")
+FIREFOX_BOOKMARKS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+EDGE_BOOKMARKS_TITLE = "Edge Bookmarks"
+EDGE_BOOKMARKS_DESC = "Edge bookmarks."
+EDGE_BOOKMARKS_OUTFILE = Path(ROOT + "/data/browser_history/edge_bookmarks.json")
+EDGE_BOOKMARKS_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
+
+def dump_to_json(file_path, data):
+    """"
+    Desc   :    Dumps the data extracted to json format.
+
+    Params :    file_path - The path of the file to dump the json data to.
+                data - The extracted data.
+    """
+    with open(file_path, "w") as outfile:
+        json.dump(data, outfile, default=str, indent=4)
+
+
+def parse_history(title, description, outfile, browser_type):
+    """"
+    Desc   :    Parses the history of a web browser and extracts it.
+
+    Params :    title - The title of the module.
+                description - The description of the module.
+                outfile - The file the history gets output to.
+                browser_type - The type of browser the function will operate on (e.g. chrome, firefox, edge).
+    """
+    data = []
+    if browser_type == "chrome":
+        f = Chrome()
+    elif browser_type == "firefox":
+        f = Firefox()
+    elif browser_type == "edge":
+        f = Edge()
+    else:
+        return
     outputs = f.fetch_history()
-    his = outputs.histories
-    outputs.save("Edge.json")
+    histories = outputs.histories
+    for history in histories:
+        data.append({
+            'time': history[0],
+            'url': history[1],
+        })
+    if len(data) == 0:
+        data.insert(0, "No history found!")
+    data.insert(0, description)
+    data.insert(0, title)
+    dump_to_json(outfile, data)
 
-def write_Chromehistory_json():
-    from browser_history.browsers import Chrome
-    f = Chrome()
-    outputs = f.fetch_history()
-    his = outputs.histories
-    outputs.save("Chrome.json")
+
+def parse_cookies(title, description, outfile, browser_type):
+    """"
+    Desc   :    Parses the cookies of a web browser and extracts it.
+
+    Params :    title - The title of the module.
+                description - The description of the module.
+                outfile - The file the cookies gets output to.
+                browser_type - The type of browser the function will operate on (e.g. chrome, firefox, edge).
+    """
+    data = []
+    try:
+        if browser_type == "chrome":
+            cookies = browser_cookie3.chrome()
+        elif browser_type == "firefox":
+            cookies = browser_cookie3.firefox()
+        elif browser_type == "edge":
+            cookies = browser_cookie3.edge()
+        else:
+            return
+    except:
+        data.insert(0, "No cookies found!")
+        data.insert(0, description)
+        data.insert(0, title)
+        dump_to_json(outfile, data)
+        return
+
+    for cookie in cookies:
+        data.append({
+            'cookie': cookie,
+        })
+    data.insert(0, description)
+    data.insert(0, title)
+    dump_to_json(outfile, data)
 
 
-def write_Foxhistory_json():
-    from browser_history.browsers import Firefox
-    f = Firefox()
-    outputs = f.fetch_history()
-    his = outputs.histories
-    outputs.save("Firefox.json")
+def parse_bookmarks(title, description, outfile, browser_type):
+    """"
+    Desc   :    Parses the bookmarks of a web browser and extracts it.
 
-def Foxhistory_bookmark_json():
-    from browser_history.browsers import Firefox
-    f = Firefox()
-    outputs = f.fetch_bookmarks()
-    bms = outputs.bookmarks
-    outputs.save("FirefoxBM.json")
+    Params :    title - The title of the module.
+                description - The description of the module.
+                outfile - The file the bookmarks gets output to.
+                browser_type - The type of browser the function will operate on (e.g. chrome, firefox, edge).
+    """
+    data = []
+    if browser_type == "chrome":
+        browser = Chrome()
+    elif browser_type == "firefox":
+        browser = Firefox()
+    elif browser_type == "edge":
+        browser = Edge()
+    else:
+        return
+    bookmarks = browser.fetch_bookmarks()
+    bookmarks = bookmarks.bookmarks
+    for bookmark in bookmarks:
+        data.append({
+            'time': bookmark[0],
+            'bookmark': bookmark[1]
+        })
+    if len(data) == 0:
+        data.insert(0, "No history found!")
+    data.insert(0, description)
+    data.insert(0, title)
+    dump_to_json(outfile, data)
 
-def Chromehistory_bookmark_json():
-    from browser_history.browsers import Firefox
-    f = Firefox()
-    outputs = f.fetch_bookmarks()
-    bms = outputs.bookmarks
-    outputs.save("ChromeBM.json")
-
-def Edgehistory_bookmark_json():
-    from browser_history.browsers import Firefox
-    f = Firefox()
-    outputs = f.fetch_bookmarks()
-    bms = outputs.bookmarks
-    outputs.save("EdgeBM.json")
-
-def Chrome_Cookie_json():
-    with open('Chrome_cookie.json', mode='w', encoding='utf-8', newline='') as file:
-        for list in browser_cookie3.chrome():
-            json.dump(list.__dict__, file, ensure_ascii=False)
-            file.write('\n')
-
-def firefox_Cookie_json():
-    with open('firefox_cookie.json', mode='w', encoding='utf-8', newline='') as file:
-        for list in browser_cookie3.firefox():
-            json.dump(list.__dict__, file, ensure_ascii=False)
-            file.write('\n')
-
-def edge_Cookie_json():
-    import browser_cookie3
-    with open('edge_cookie.json', mode='w', encoding='utf-8', newline='') as file:
-        for list in browser_cookie3.edge():
-            json.dump(list.__dict__, file, ensure_ascii=False)
-            file.write('\n')
 
 def run():
-    Chrome_Cookie_json()
-    edge_Cookie_json()
-    firefox_Cookie_json()
-    write_Edgehistory_json()
-    write_Chromehistory_json()
-    write_Foxhistory_json()
-    Edgehistory_bookmark_json()
-    Chromehistory_bookmark_json()
-    Foxhistory_bookmark_json()
+    """"
+    Desc   :    Runs the browser_history module.
+
+    Params :    None.
+    """
+    parse_history(CHROME_HISTORY_TITLE, CHROME_HISTORY_DESC, CHROME_HISTORY_OUTFILE, "chrome")
+    parse_history(FIREFOX_HISTORY_TITLE, FIREFOX_HISTORY_DESC, FIREFOX_HISTORY_OUTFILE, "firefox")
+    parse_history(EDGE_HISTORY_TITLE, EDGE_HISTORY_DESC, EDGE_HISTORY_OUTFILE, "edge")
+    parse_cookies(CHROME_COOKIE_TITLE, CHROME_COOKIE_DESC, CHROME_COOKIE_OUTFILE, "chrome")
+    parse_cookies(FIREFOX_COOKIE_TITLE, FIREFOX_COOKIE_TITLE, FIREFOX_COOKIE_TITLE, "firefox")
+    parse_cookies(EDGE_COOKIE_TITLE, EDGE_COOKIE_TITLE, EDGE_COOKIE_TITLE, "edge")
+    parse_bookmarks(CHROME_BOOKMARKS_TITLE, CHROME_BOOKMARKS_DESC, CHROME_BOOKMARKS_OUTFILE, "chrome")
+    parse_bookmarks(FIREFOX_BOOKMARKS_TITLE, FIREFOX_BOOKMARKS_DESC, FIREFOX_BOOKMARKS_OUTFILE, "firefox")
+    parse_bookmarks(EDGE_BOOKMARKS_TITLE, EDGE_BOOKMARKS_DESC, EDGE_BOOKMARKS_OUTFILE, "edge")
 
 
 if __name__ == "__main__":

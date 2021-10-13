@@ -5,7 +5,7 @@ from dominate.util import raw
 from pathlib import Path
 import glob
 import os
-from main import return_included, return_post
+from main import return_excluded, return_included, return_post
 import json
 from datetime import datetime
 
@@ -13,8 +13,10 @@ ROOT = str(Path(__file__).parent.parent)
 
 
 def get_datetime():
-    """
-    Gets the current computer time and returns it
+    """"
+    Desc   :    Gets the current computer time and returns it.
+
+    Params :    None.
     """
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%YT%H:%M:%S.%f")
@@ -22,8 +24,11 @@ def get_datetime():
 
 
 def get_files(path, arg_name):
-    """
-    Helper function to return all directories in working directory
+    """"
+    Desc   :    Helper function to return all directories in working directory.
+
+    Params :    path -
+                arg_name -
     """
     result = []
     for name in glob.iglob(path + arg_name):
@@ -33,40 +38,50 @@ def get_files(path, arg_name):
 
 
 def nav_misc_menu_list():
-    """
-    Returns a list of files that is in the misc category
+    """"
+    Desc   :    Returns a list of files that is in the misc category.
+
+    Params :    None.
     """
     misc_menu = get_files(str(Path(ROOT + "/data/**/")), "/misc*")
     return misc_menu
 
 
 def nav_usb_menu_list():
-    """
-    Returns a list of files that is in the usb category
+    """"
+    Desc   :    Returns a list of files that is in the usb category.
+
+    Params :    None.
     """
     usb_menu = get_files(str(Path(ROOT + "/data/**/")), "/usb*")
     return usb_menu
 
 
 def nav_file_menu_list():
-    """
-    Returns a list of files that is in the file activity category
+    """"
+    Desc   :    Returns a list of files that is in the file activity category.
+
+    Params :    None.
     """
     file_menu = get_files(str(Path(ROOT + "/data/**/")), "/file_activity*")
     return file_menu
 
 
 def nav_keyword_menu_list():
-    """
-    Returns a list of files that is in the keyword search category
+    """"
+    Desc   :    Returns a list of files that is in the keyword search category.
+
+    Params :    None.
     """
     keyword_menu = get_files(str(Path(ROOT + "/data/**/")), "/keyword_search*")
     return keyword_menu
 
 
 def nav_others_menu_list():
-    """
-    Returns a list of files that is in the others category
+    """"
+    Desc   :    Returns a list of files that is in the others category.
+
+    Params :    None.
     """
     others_menu = get_files(str(Path(ROOT + "/data/**/")), "/*")
     others_menu = [m for m in others_menu if m not in nav_misc_menu_list()]
@@ -77,8 +92,10 @@ def nav_others_menu_list():
 
 
 def homepage():
-    """
-    Generates index.html page, it will only execute when ran from main.py
+    """"
+    Desc   :    Generates index.html page, it will only execute when ran from main.py.
+
+    Params :    None.
     """
     try:
         homepage_title = "Blitz-X Summary Page"
@@ -247,8 +264,10 @@ def homepage():
 
 
 def get_json_files():
-    """
-    Returns all files in a list that resides in the data directory with a json extension
+    """"
+    Desc   :    Returns all files in a list that resides in the data directory with a json extension.
+
+    Params :    None.
     """
     json_files = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
@@ -258,9 +277,11 @@ def get_json_files():
 
 
 def get_json_title():
-    """
-    Returns all json file titles in the data directory in a list
-    """
+    """"
+     Desc   :    Returns all json file titles in the data directory in a list.
+
+     Params :    None.
+     """
     json_title = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
         for file in files:
@@ -270,9 +291,11 @@ def get_json_title():
 
 
 def json_to_html(args_dir):
-    """
-    Takes in the full pathname of the json file and converts it to html and returns it
-    """
+    """"
+     Desc   :    Takes in the full pathname of the json file and converts it to html and returns it.
+
+     Params :    args_dir -
+     """
     with open(args_dir, "r") as f:
         json_info = json.loads(f.read())
         convert_json = json2html.convert(json=json_info)
@@ -282,9 +305,11 @@ def json_to_html(args_dir):
 
 
 def html_template():
-    """
-    Generates a template in HTML
-    """
+    """"
+     Desc   :    Generates a template in HTML.
+
+     Params :    None.
+     """
     try:
         misc_menu_list = nav_misc_menu_list()
         if misc_menu_list:
@@ -452,6 +477,11 @@ def html_template():
 
 
 def run():
+    """"
+     Desc   :    Runs the report module.
+
+     Params :    None.
+     """
     html_template()
     homepage()
 
