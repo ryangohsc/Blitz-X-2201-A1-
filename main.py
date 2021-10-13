@@ -95,7 +95,10 @@ def return_included():
     plugins = os.listdir(plugin_path)
     plugins = fnmatch.filter(plugins, "*py")
     for plugin in plugins:
-        plugin_list.append(plugin)
+        if plugin in EXCLUDED_PLUGINS:
+            pass
+        else:
+            plugin_list.append(plugin)
     return plugin_list
 
 
@@ -135,9 +138,9 @@ def load_plugins():
     plugins = fnmatch.filter(plugins, "*py")
     print(print_yellow("[*] Loading plugins...."))
     for plugin in plugins:
-        if plugin in POST_PROCESSING_PLUGINS:
+        if plugin in POST_PROCESSING_PLUGINS or plugin in EXCLUDED_PLUGINS:
             plugins.remove(plugin)
-    print(print_green(print_green("[!] Plugins successfully loaded!")))
+    print(print_green("[!] Plugins successfully loaded!"))
     return plugin_path, plugins
 
 

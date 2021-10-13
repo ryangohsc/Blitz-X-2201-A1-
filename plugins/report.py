@@ -8,15 +8,16 @@ import os
 from main import return_excluded, return_included, return_post
 import json
 from datetime import datetime
+from coloroma_colours import *
 
 ROOT = str(Path(__file__).parent.parent)
 
 
 def get_datetime():
     """"
-    Desc   :    Gets the current computer time and returns it.
-
-    Params :    None.
+    Gets the current computer time and returns it.
+    :param: None
+    :return: dt_string
     """
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%YT%H:%M:%S.%f")
@@ -25,10 +26,10 @@ def get_datetime():
 
 def get_files(path, arg_name):
     """"
-    Desc   :    Helper function to return all directories in working directory.
-
-    Params :    path -
-                arg_name -
+    Helper function to return all directories in working directory.
+    :param: path
+            arg_name
+    :return: result
     """
     result = []
     for name in glob.iglob(path + arg_name):
@@ -39,9 +40,9 @@ def get_files(path, arg_name):
 
 def nav_misc_menu_list():
     """"
-    Desc   :    Returns a list of files that is in the misc category.
-
-    Params :    None.
+    Returns a list of files that is in the misc category.
+    :param: None
+    :return: misc_menu
     """
     misc_menu = get_files(str(Path(ROOT + "/data/**/")), "/misc*")
     return misc_menu
@@ -49,9 +50,9 @@ def nav_misc_menu_list():
 
 def nav_usb_menu_list():
     """"
-    Desc   :    Returns a list of files that is in the usb category.
-
-    Params :    None.
+    Returns a list of files that is in the usb category.
+    :param: None
+    :return: usb_menu
     """
     usb_menu = get_files(str(Path(ROOT + "/data/**/")), "/usb*")
     return usb_menu
@@ -59,9 +60,9 @@ def nav_usb_menu_list():
 
 def nav_file_menu_list():
     """"
-    Desc   :    Returns a list of files that is in the file activity category.
-
-    Params :    None.
+    Returns a list of files that is in the file activity category.
+    :param: None
+    :return: file_menu
     """
     file_menu = get_files(str(Path(ROOT + "/data/**/")), "/file_activity*")
     return file_menu
@@ -69,33 +70,44 @@ def nav_file_menu_list():
 
 def nav_keyword_menu_list():
     """"
-    Desc   :    Returns a list of files that is in the keyword search category.
-
-    Params :    None.
+    Returns a list of files that is in the keyword search category.
+    :param: None
+    :return: keyword_menu
     """
     keyword_menu = get_files(str(Path(ROOT + "/data/**/")), "/keyword_search*")
     return keyword_menu
 
 
+def nav_browser_menu_list():
+    """"
+    Returns a list of files that is in the browser activity category.
+    :param: None
+    :return: browser_menu
+    """
+    browser_menu = get_files(str(Path(ROOT + "/data/**/")), "/browser_activity*")
+    return browser_menu
+
+
 def nav_others_menu_list():
     """"
-    Desc   :    Returns a list of files that is in the others category.
-
-    Params :    None.
+    Returns a list of files that is in the others category.
+    :param: None
+    :return: others_menu
     """
     others_menu = get_files(str(Path(ROOT + "/data/**/")), "/*")
     others_menu = [m for m in others_menu if m not in nav_misc_menu_list()]
     others_menu = [m for m in others_menu if m not in nav_usb_menu_list()]
     others_menu = [m for m in others_menu if m not in nav_file_menu_list()]
     others_menu = [m for m in others_menu if m not in nav_keyword_menu_list()]
+    others_menu = [m for m in others_menu if m not in nav_browser_menu_list()]
     return others_menu
 
 
 def homepage():
     """"
-    Desc   :    Generates index.html page, it will only execute when ran from main.py.
-
-    Params :    None.
+    Generates index.html page, it will only execute when ran from main.py.
+    :param: None
+    :return: None
     """
     try:
         homepage_title = "Blitz-X Summary Page"
@@ -114,6 +126,9 @@ def homepage():
         keyword_menu_list = nav_keyword_menu_list()
         if keyword_menu_list:
             keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
+        browser_menu_list = nav_browser_menu_list()
+        if browser_menu_list:
+            browser_menu_list = [x.replace("json", "html") for x in browser_menu_list]
         others_menu_list = nav_others_menu_list()
         if others_menu_list:
             others_menu_list = [x.replace("json", "html") for x in others_menu_list]
@@ -121,11 +136,11 @@ def homepage():
         included_plugins = ", ".join(return_included())
         post_plugins = ", ".join(return_post())
         if len(excluded_plugins) == 0:
-            excluded_plugins = "No plugins were excluded"
+            excluded_plugins = "No plugins were excluded."
         if len(included_plugins) == 0:
-            included_plugins = "No plugins were included"
+            included_plugins = "No plugins were included."
         if len(post_plugins) == 0:
-            post_plugins = "No plugins were used for post-processing"
+            post_plugins = "No plugins were used for post-processing."
         with doc.head:
             meta(name="viewport", content="width=device-width, initial-scale=1.0")
             style("""\
@@ -227,6 +242,14 @@ def homepage():
                     with dropdown:
                         dropdown_div = div(cls="dropdown-content")
                         dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
+                if browser_menu_list:
+                    dropdown = div(cls="dropdown")
+                    with dropdown:
+                        button("Browser Activity", cls="dropbtn")
+                    with dropdown:
+                        dropdown_div = div(cls="dropdown-content")
+                        dropdown_div.add(
+                            a(browser_menu_list, href=browser_menu_list) for browser_menu_list in browser_menu_list)
                 if others_menu_list:
                     dropdown = div(cls="dropdown")
                     with dropdown:
@@ -259,15 +282,15 @@ def homepage():
         with open(homepage_path, "w") as f:
             f.write(doc.render(pretty=True))
     except:
-        print("[!] index.html failed to generate")
+        print(print_red("INFO: index.html failed to generate"))
         pass
 
 
 def get_json_files():
     """"
-    Desc   :    Returns all files in a list that resides in the data directory with a json extension.
-
-    Params :    None.
+    Returns all files in a list that resides in the data directory with a json extension.
+    :param: None
+    :return: json_files
     """
     json_files = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
@@ -278,9 +301,9 @@ def get_json_files():
 
 def get_json_title():
     """"
-     Desc   :    Returns all json file titles in the data directory in a list.
-
-     Params :    None.
+    Returns all json file titles in the data directory in a list.
+    :param: None
+    :return: json_title
      """
     json_title = []
     for root, dirs, files in os.walk(str(Path(ROOT + "/data/"))):
@@ -292,9 +315,9 @@ def get_json_title():
 
 def json_to_html(args_dir):
     """"
-     Desc   :    Takes in the full pathname of the json file and converts it to html and returns it.
-
-     Params :    args_dir -
+    Takes in the full pathname of the json file and converts it to html and returns it.
+    :param: args_dir
+    :return: convert_json
      """
     with open(args_dir, "r") as f:
         json_info = json.loads(f.read())
@@ -306,9 +329,9 @@ def json_to_html(args_dir):
 
 def html_template():
     """"
-     Desc   :    Generates a template in HTML.
-
-     Params :    None.
+    Generates a template in HTML.
+    :param: None
+    :return: None
      """
     try:
         misc_menu_list = nav_misc_menu_list()
@@ -323,6 +346,9 @@ def html_template():
         keyword_menu_list = nav_keyword_menu_list()
         if keyword_menu_list:
             keyword_menu_list = [x.replace("json", "html") for x in keyword_menu_list]
+        browser_menu_list = nav_browser_menu_list()
+        if browser_menu_list:
+            browser_menu_list = [x.replace("json", "html") for x in browser_menu_list]
         others_menu_list = nav_others_menu_list()
         if others_menu_list:
             others_menu_list = [x.replace("json", "html") for x in others_menu_list]
@@ -456,6 +482,14 @@ def html_template():
                         with dropdown:
                             dropdown_div = div(cls="dropdown-content")
                             dropdown_div.add(a(keyword_menu_list, href=keyword_menu_list) for keyword_menu_list in keyword_menu_list)
+                    if browser_menu_list:
+                        dropdown = div(cls="dropdown")
+                        with dropdown:
+                            button("Browser Activity", cls="dropbtn")
+                        with dropdown:
+                            dropdown_div = div(cls="dropdown-content")
+                            dropdown_div.add(
+                                a(browser_menu_list, href=browser_menu_list) for browser_menu_list in browser_menu_list)
                     if others_menu_list:
                         dropdown = div(cls="dropdown")
                         with dropdown:
@@ -477,11 +511,11 @@ def html_template():
 
 
 def run():
-    """"
-     Desc   :    Runs the report module.
-
-     Params :    None.
-     """
+    """
+    Runs the report module.
+    :param: None
+    :return: None
+    """
     html_template()
     homepage()
 

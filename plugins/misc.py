@@ -9,9 +9,9 @@ ROOT = str(get_project_root())
 
 def get_services():
     """"
-    Desc   :	Displays all services installed.
-
-    Params :	None.
+    Displays all services installed.
+    :param: None
+    :return: None
     """
     c = wmi.WMI()
     my_list = []
@@ -32,9 +32,9 @@ def get_services():
 
 def get_windows_version():
     """"
-    Desc   :	Gets the Windows Version of the installation.
-
-    Params :	None.
+    Gets the Windows Version of the installation.
+    :param: None
+    :return: None
     """
     try:
         my_list = []
@@ -56,9 +56,9 @@ def get_windows_version():
 
 def get_system_env_var():
     """"
-    Desc   :	Gets the system environment variables.
-
-    Params :	None.
+    Gets the system environment variables.
+    :param: None
+    :return: None
     """
     try:
         my_list = []
@@ -80,9 +80,9 @@ def get_system_env_var():
 
 def get_start_up_apps():
     """"
-    Desc   :	Get start up applications from the registry.
-
-    Params :	None.
+    Get start up applications from the registry.
+    :param: None
+    :return: None
     """
     try:
         my_list = []
@@ -104,9 +104,9 @@ def get_start_up_apps():
 
 def get_prev_ran_prog():
     """"
-    Desc   :	Gets previously ran programs from the registry.
-
-    Params :	None.
+    Gets previously ran programs from the registry.
+    :param: None
+    :return: None
     """
     try:
         query = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", 0)
@@ -130,9 +130,9 @@ def get_prev_ran_prog():
 
 def run():
     """"
-    Desc   :	Runs the misc module.
-
-    Params :	None.
+    Runs the misc module.
+    :param: None
+    :return: None
     """
     get_windows_version()
     get_services()

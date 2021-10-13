@@ -11,9 +11,9 @@ HASHPATH = Path(ROOT + "/master_hash.txt")
 
 def check_exist(arg_filename):
     """"
-    Desc   :    Checks if file exists and returns the result.
-
-    Params :    arg_filename -.
+    Helper function that checks if file exists and returns the result.
+    :param: arg_filename
+    :return: append_write
     """
     if os.path.exists(arg_filename):
         append_write = "a"
@@ -24,10 +24,10 @@ def check_exist(arg_filename):
 
 def get_data_files(arg_path, arg_name):
     """"
-    Desc   :    Returns all data files.
-
-    Params :    arg_path - Path containing all the data files.
-                arg_name - The name of the data file.
+    Returns all data files.
+    :param: arg_path - Path containing all the data files.
+            arg_name - The name of the data file.
+    :return: result
     """
     result = []
     for name in glob.iglob(arg_path + arg_name):
@@ -37,9 +37,9 @@ def get_data_files(arg_path, arg_name):
 
 def md5(arg_file):
     """"
-    Desc   :    Hashes file with MD5 and returns it.
-
-    Params :    arg_file - File to be hashed.
+    Hashes file with MD5 and returns it.
+    :param: arg_file - File to be hashed.
+    :return: file_hash.hexdigest()
     """
     file_hash = hashlib.md5()
     with open(arg_file, "rb") as f:
@@ -52,9 +52,9 @@ def md5(arg_file):
 
 def sha1(arg_file):
     """"
-    Desc   :    Hashes file with SHA1 and returns it.
-
-    Params :    arg_file -
+    Hashes file with SHA1 and returns it.
+    :param: arg_file - File to be hashed.
+    :return: file_hash.hexdigest()
     """
     file_hash = hashlib.sha1()
     with open(arg_file, "rb") as f:
@@ -67,9 +67,9 @@ def sha1(arg_file):
 
 def sha256(arg_file):
     """"
-    Desc   :    Hashes file with SHA256 and returns it.
-
-    Params :    arg_file - File to be hashed.
+    Hashes file with SHA256 and returns it.
+    :param: arg_file - File to be hashed.
+    :return: file_hash.hexdigest()
     """
     file_hash = hashlib.sha256()
     with open(arg_file, "rb") as f:
@@ -82,9 +82,9 @@ def sha256(arg_file):
 
 def sha512(arg_file):
     """"
-    Desc   :    Hashes file with SHA512 and returns it.
-
-    Params :    arg_file - File to be hashed.
+    Hashes file with SHA512 and returns it.
+    :param: arg_file - File to be hashed.
+    :return: file_hash.hexdigest()
     """
     file_hash = hashlib.sha512()
     with open(arg_file, "rb") as f:
@@ -97,9 +97,9 @@ def sha512(arg_file):
 
 def hash_files():
     """"
-    Desc   :    Hashes files in data and the HTMLReport folder.
-
-    Params :    None.
+    Hashes files in data and the HTMLReport folder.
+    :param: None
+    :return: None
     """
     try:
         data_folder = get_data_files(str(Path(ROOT)), "/data/**/*.json")
@@ -171,9 +171,9 @@ def hash_files():
 
 def run():
     """"
-    Desc   :    Runs the zehash module.
-
-    Params :    None.
+    Runs the zehash module.
+    :param: None
+    :return: None
     """
     hash_files()
 
