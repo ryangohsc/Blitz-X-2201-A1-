@@ -95,7 +95,7 @@ def parse_history(title, description, outfile, browser_type):
             'url': history[1],
         })
     if len(data) == 0:
-        data.insert(0, "No history found!")
+        data.insert(0, {"not found": "No history found!"})
     else:
         data = sorted(data, key=lambda k: k['time'], reverse=True)
     data.insert(0, description)
@@ -123,7 +123,7 @@ def parse_cookies(title, description, outfile, browser_type):
         else:
             return
     except:
-        data.insert(0, "No cookies found!")
+        data.insert(0, {"not found": "No cookies found!"})
         data.insert(0, description)
         data.insert(0, title)
         dump_to_json(outfile, data)
@@ -156,6 +156,7 @@ def parse_bookmarks(title, description, outfile, browser_type):
         browser = Edge()
     else:
         return
+
     bookmarks = browser.fetch_bookmarks()
     bookmarks = bookmarks.bookmarks
     for bookmark in bookmarks:
@@ -164,7 +165,7 @@ def parse_bookmarks(title, description, outfile, browser_type):
             'bookmark': bookmark[1]
         })
     if len(data) == 0:
-        data.insert(0, "No history found!")
+        data.insert(0, {"not found": "No history found!"})
     else:
         data = sorted(data, key=lambda k: k['time'], reverse=True)
     data.insert(0, description)
