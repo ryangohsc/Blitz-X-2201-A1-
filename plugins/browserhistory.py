@@ -165,7 +165,7 @@ def parse_bookmarks(title, description, outfile, browser_type):
             'bookmark': bookmark[1]
         })
     if len(data) == 0:
-        data.insert(0, {"not found": "No history found!"})
+        data.insert(0, {"not found": "No bookmarks found!"})
     else:
         data = sorted(data, key=lambda k: k['time'], reverse=True)
     data.insert(0, description)
