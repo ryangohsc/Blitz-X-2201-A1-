@@ -171,7 +171,7 @@ def homepage():
                         .dropdown-content {
                             display: none;
                             position: absolute;
-                            background-color: #f9f9f9;
+                            background-color: #f2f2f2;
                             min-width: 160px;
                             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
                             z-index: 1;
@@ -207,7 +207,7 @@ def homepage():
                             text-align: left;
                         }
                         .navbar a:hover, .dropdown:hover .dropbtn {
-                            background-color: red;
+                            background-color: #cbcbcb;
                         }
                         """)
         with doc:
@@ -411,7 +411,7 @@ def html_template():
                     .dropdown-content {
                         display: none;
                         position: absolute;
-                        background-color: #f9f9f9;
+                        background-color: #f2f2f2;
                         min-width: 160px;
                         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
                         z-index: 1;
@@ -447,7 +447,7 @@ def html_template():
                         text-align: left;
                     }
                     .navbar a:hover, .dropdown:hover .dropbtn {
-                        background-color: red;
+                        background-color: #cbcbcb;
                     }
                     """)
             with doc:
