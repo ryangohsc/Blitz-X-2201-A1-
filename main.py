@@ -16,7 +16,7 @@ from plugins.encryption import *
 PLUGIN_PATH = "plugins"
 LOADED_PLUGINS = []
 POST_PROCESSING_PLUGINS = ["keyword_search.py", "report.py", "zehash.py"]
-EXCLUDED_PLUGINS = ["main.py", "encryption.py"]
+EXCLUDED_PLUGINS = ["encryption.py"]
 warnings.filterwarnings("ignore")
 WIN32_EPOCH = datetime(1601, 1, 1)
 
@@ -43,7 +43,7 @@ def get_project_root():
 
     Params :    None
     """
-    return Path(__file__).parent
+    return os.getcwd()
 
 
 def dt_from_win32_ts(timestamp):

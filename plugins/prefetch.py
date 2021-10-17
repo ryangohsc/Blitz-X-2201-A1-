@@ -3,7 +3,7 @@ import time
 import json
 from windowsprefetch import Prefetch
 from pathlib import Path
-from plugins.main import *
+from main import *
 
 # Global Variables
 ROOT = str(get_project_root())

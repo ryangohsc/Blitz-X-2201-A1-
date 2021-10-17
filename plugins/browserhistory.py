@@ -3,7 +3,7 @@ import browser_cookie3
 from browser_history.browsers import Edge
 from browser_history.browsers import Chrome
 from browser_history.browsers import Firefox
-from plugins.main import *
+from main import *
 
 # Global Variables
 ROOT = str(get_project_root())

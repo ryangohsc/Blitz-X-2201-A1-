@@ -1,7 +1,7 @@
 import os
 import json
 import re
-from plugins.main import *
+from main import *
 
 TITLE = 0
 DESCRIPTION = 1

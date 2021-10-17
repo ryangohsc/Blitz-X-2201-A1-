@@ -5,7 +5,7 @@ from Evtx.Views import evtx_file_xml_view
 import contextlib
 import mmap
 import xml.etree.ElementTree as ET
-from plugins.main import *
+from main import *
 import json
 from pathlib import Path
 

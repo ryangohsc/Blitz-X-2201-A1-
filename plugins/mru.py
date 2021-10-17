@@ -2,7 +2,7 @@ from win32com.shell import shell
 from plugins.misc import *
 import json
 from pathlib import Path
-from plugins.main import *
+from main import *
 
 # Global Variables
 ROOT = str(get_project_root())

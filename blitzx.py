@@ -1,4 +1,4 @@
-from plugins.main import *
+from main import *
 from plugins.browserhistory import *
 from plugins.external_device import *
 from plugins.jumplist import *

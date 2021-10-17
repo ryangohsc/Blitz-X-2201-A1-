@@ -5,12 +5,12 @@ from dominate.util import raw
 from pathlib import Path
 import glob
 import os
-from plugins.main import *
+from main import *
 import json
 from datetime import datetime
 
 
-ROOT = str(Path(__file__).parent.parent)
+ROOT = os.getcwd()
 
 
 def get_datetime():

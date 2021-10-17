@@ -4,7 +4,7 @@ import os
 from plugins.lnkfiles import LnkFile
 import json
 from pathlib import Path
-from plugins.main import *
+from main import *
 
 # Global Variables
 ROOT = str(get_project_root())

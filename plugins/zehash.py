@@ -1,5 +1,5 @@
 import hashlib
-from plugins.main import *
+from main import *
 from pathlib import Path
 import glob
 import os
