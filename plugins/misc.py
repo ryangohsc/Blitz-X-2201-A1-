@@ -2,7 +2,7 @@ from winreg import *
 import wmi
 import json
 from pathlib import Path
-from main import get_project_root
+from plugins.main import *
 
 ROOT = str(get_project_root())
 

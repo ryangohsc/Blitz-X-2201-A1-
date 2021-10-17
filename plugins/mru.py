@@ -2,7 +2,7 @@ from win32com.shell import shell
 from plugins.misc import *
 import json
 from pathlib import Path
-from main import convert_time, dt_from_win32_ts, get_project_root
+from plugins.main import *
 
 # Global Variables
 ROOT = str(get_project_root())

@@ -5,7 +5,7 @@ from Evtx.Views import evtx_file_xml_view
 import contextlib
 import mmap
 import xml.etree.ElementTree as ET
-from main import convert_time, dt_from_win32_ts, get_project_root
+from plugins.main import *
 import json
 from pathlib import Path
 

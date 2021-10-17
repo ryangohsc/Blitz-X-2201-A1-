@@ -1,15 +1,31 @@
-import hashlib
-import fnmatch
-import os
 import sys
+import os
+import fnmatch
+import hashlib
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
-from main import cls, print_banner
-from coloroma_colours import *
+from colorama import Fore, Style
+
 
 # Global variables
 BUFFER_SIZE = 1024 * 1024
+
+
+def print_green(text):
+    return Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_red(text):
+    return Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_yellow(text):
+    return Fore.YELLOW + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_white(text):
+    return Fore.WHITE + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
 
 
 def export_pvt_key(pvt_key, filename, password):
@@ -173,8 +189,8 @@ def decrypt_masterhash(pvt_key_path):
 
     # Import the private key
     password = input(print_yellow("[+] Enter passphrase: "))
-    cls()
-    print_banner()
+    # cls()
+    # print_banner()
     try:
         pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
     except FileNotFoundError:

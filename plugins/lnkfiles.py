@@ -3,7 +3,7 @@ import os
 import fnmatch
 import json
 from pathlib import Path
-from main import convert_time, get_project_root
+from plugins.main import *
 
 # Global Variables
 ROOT = str(get_project_root())
@@ -72,12 +72,12 @@ def parse_lnk_files(path, data, lnk_file):
 
 		try:
 			lnk_file_obj.creation_time = convert_time(json_format['header']['creation_time'])
-		except (KeyError, AttributeError):
+		except:
 			pass
 
 		try:
 			lnk_file_obj.modified_time = convert_time(json_format['header']['modified_time'])
-		except (KeyError, AttributeError):
+		except:
 			pass
 
 		try:

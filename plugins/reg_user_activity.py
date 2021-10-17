@@ -1,7 +1,7 @@
 from winreg import *
 import json
 from pathlib import Path
-from main import get_project_root
+from plugins.main import *
 
 # Global Variables
 ROOT = str(get_project_root())

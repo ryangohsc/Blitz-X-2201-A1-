@@ -4,7 +4,7 @@ import os
 from plugins.lnkfiles import LnkFile
 import json
 from pathlib import Path
-from main import convert_time, get_project_root
+from plugins.main import *
 
 # Global Variables
 ROOT = str(get_project_root())
@@ -48,12 +48,12 @@ def parse_jumplist_json(json_data, data):
 
 	try:
 		lnk_file_obj.creation_time = convert_time(json_data['header']['creation_time'])
-	except (KeyError, AttributeError):
+	except:
 		pass
 
 	try:
 		lnk_file_obj.modified_time = convert_time(json_data['header']['modified_time'])
-	except (KeyError, AttributeError):
+	except:
 		pass
 
 	try:

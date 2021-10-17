@@ -3,8 +3,7 @@ import browser_cookie3
 from browser_history.browsers import Edge
 from browser_history.browsers import Chrome
 from browser_history.browsers import Firefox
-from pathlib import Path
-from main import get_project_root
+from plugins.main import *
 
 # Global Variables
 ROOT = str(get_project_root())
@@ -179,6 +178,8 @@ def run():
 
     Params :    None.
     """
+    CHROME_HISTORY_OUTFILE.parent.mkdir(exist_ok=True, parents=True)
+
     parse_history(CHROME_HISTORY_TITLE, CHROME_HISTORY_DESC, CHROME_HISTORY_OUTFILE, "chrome")
     parse_history(FIREFOX_HISTORY_TITLE, FIREFOX_HISTORY_DESC, FIREFOX_HISTORY_OUTFILE, "firefox")
     parse_history(EDGE_HISTORY_TITLE, EDGE_HISTORY_DESC, EDGE_HISTORY_OUTFILE, "edge")

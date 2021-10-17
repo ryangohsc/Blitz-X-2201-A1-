@@ -1,8 +1,7 @@
 import os
 import json
 import re
-from main import get_project_root
-from pathlib import Path
+from plugins.main import *
 
 TITLE = 0
 DESCRIPTION = 1

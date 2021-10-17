@@ -1,36 +1,40 @@
+import warnings
 import argparse
 import importlib
+import os
+import fnmatch
 import time
-import warnings
+import sys
+from colorama import Fore, Style
 from dateutil import tz
 from datetime import datetime, timedelta
 from pathlib import Path
-from encryption import *
-from coloroma_colours import *
+from plugins.encryption import *
+
 
 # Global variables
 PLUGIN_PATH = "plugins"
 LOADED_PLUGINS = []
 POST_PROCESSING_PLUGINS = ["keyword_search.py", "report.py", "zehash.py"]
-EXCLUDED_PLUGINS = []
+EXCLUDED_PLUGINS = ["main.py", "encryption.py"]
 warnings.filterwarnings("ignore")
 WIN32_EPOCH = datetime(1601, 1, 1)
 
 
-def init_argparser():
-    """"
-    Desc   :    Initialise the arg parser.
+def print_green(text):
+    return Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
 
-    Params :    None
-    """
-    parser = argparse.ArgumentParser(
-        description="Write the description of the tool here",
-        epilog="ICT2202 Assignment 1 Team Panzerwerfer"
-    )
-    requiredNamed = parser.add_argument_group("required arguments")
-    parser.add_argument("-keydec", help="Imports a private key to decrypt the master hash file.")
-    args = parser.parse_args()
-    return args
+
+def print_red(text):
+    return Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_yellow(text):
+    return Fore.YELLOW + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_white(text):
+    return Fore.WHITE + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
 
 
 def get_project_root():
@@ -102,6 +106,22 @@ def return_included():
     return plugin_list
 
 
+def init_argparser():
+    """"
+    Desc   :    Initialise the arg parser.
+
+    Params :    None
+    """
+    parser = argparse.ArgumentParser(
+        description="Write the description of the tool here",
+        epilog="ICT2202 Assignment 1 Team Panzerwerfer"
+    )
+    requiredNamed = parser.add_argument_group("required arguments")
+    parser.add_argument("-keydec", help="Imports a private key to decrypt the master hash file.")
+    args = parser.parse_args()
+    return args
+
+
 def cls():
     """"
     Desc   :    Helper function to clear screen.
@@ -154,7 +174,7 @@ def run_plugins(plugin_path, plugins):
     print(print_yellow("[*] Running plugins!"))
     no_of_plugins = len(plugins)
     for plugin in plugins:
-        if plugin not in POST_PROCESSING_PLUGINS:
+        if plugin not in POST_PROCESSING_PLUGINS and plugin not in EXCLUDED_PLUGINS:
             plugin_name = plugin[:-3]
             plugin_path = "{}.{}".format(PLUGIN_PATH, plugin_name)
             module = importlib.import_module(plugin_path)
@@ -168,7 +188,7 @@ def run_plugins(plugin_path, plugins):
         module.run()
 
 
-def main():
+def execute():
     """"
     Desc   :    Main function.
 
@@ -193,7 +213,3 @@ def main():
         encrypt_masterhash(public_key_path)
         print(print_green("\n[!] Total Time Elapsed: %s seconds" % (time.time() - start_time)))
     sys.exit(-1)
-
-
-if __name__ == '__main__':
-    main()

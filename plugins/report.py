@@ -5,10 +5,10 @@ from dominate.util import raw
 from pathlib import Path
 import glob
 import os
-from main import return_excluded, return_included, return_post
+from plugins.main import *
 import json
 from datetime import datetime
-from coloroma_colours import *
+
 
 ROOT = str(Path(__file__).parent.parent)
 
