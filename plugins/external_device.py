@@ -1,14 +1,15 @@
-import os
+import mmap
+import xml.etree.ElementTree as ET
+import json
+import contextlib
 from winreg import *
 from Evtx.Evtx import FileHeader
 from Evtx.Views import evtx_file_xml_view
-import contextlib
-import mmap
-import xml.etree.ElementTree as ET
-from main import convert_time, dt_from_win32_ts, get_project_root
-import json
+from main import *
 from pathlib import Path
 
+
+# Global Variable
 ROOT = str(get_project_root())
 
 
@@ -385,7 +386,3 @@ def run():
     get_user()
     get_vol_sn()
     usb_activities()
-
-
-if __name__ == "__main__":
-    run()

@@ -1,12 +1,33 @@
-import hashlib
-from main import get_project_root
-from pathlib import Path
 import glob
 import os
+import hashlib
+from pathlib import Path
+from colorama import init, Fore, Style
 
-ROOT = str(get_project_root())
+
+# Global Variables
 BLOCK_SIZE = 65536
+ROOT = os.getcwd()
 HASHPATH = Path(ROOT + "/master_hash.txt")
+HASHPATHDEC = Path(ROOT + "/master_hash_decrypted.txt")
+
+
+def print_green(text):
+    """"
+    Prints a sentence in the color green.
+    :param: text
+    :return: Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+    """
+    return Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_red(text):
+    """"
+    Prints a sentence in the color red.
+    :param: text
+    :return: Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+    """
+    return Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
 
 
 def check_exist(arg_filename):
@@ -95,7 +116,7 @@ def sha512(arg_file):
     return file_hash.hexdigest()
 
 
-def hash_files():
+def hash_files(hash_path):
     """"
     Hashes files in data and the HTMLReport folder.
     :param: None
@@ -103,8 +124,8 @@ def hash_files():
     """
     try:
         data_folder = get_data_files(str(Path(ROOT)), "/data/**/*.json")
-        append_write = check_exist(HASHPATH)
-        with open(str(HASHPATH), append_write) as f:
+        append_write = check_exist(hash_path)
+        with open(str(hash_path), append_write) as f:
             if append_write == "w":
                 f.write("MD5\n")
             else:
@@ -133,11 +154,11 @@ def hash_files():
                 filename = p.name
                 f.write(filename + " - " + result + "\n")
     except:
-        pass
+        print(print_red("[!] Error hashing files in the 'data' folder!"))
     try:
         report_folder = get_data_files(str(Path(ROOT)), "/HTMLReport/*.html")
-        append_write = check_exist(HASHPATH)
-        with open(str(HASHPATH), append_write) as f:
+        append_write = check_exist(hash_path)
+        with open(str(hash_path), append_write) as f:
             if append_write == "w":
                 f.write("MD5\n")
             else:
@@ -166,17 +187,32 @@ def hash_files():
                 filename = p.name
                 f.write(filename + " - " + result + "\n")
     except:
-        pass
+        print(print_red("[!] Error hashing files in the 'HTMLReport' folder!"))
 
 
-def run():
+def comparison(hash_recal_path):
+    """"
+    Calculates the SHA256 hash of master_hash_recal.txt and master_hash_decrypted.txt and compares them.
+    :param: hash_recal_path
+    :return: None
+    """
+    print("[*] Calculating the hash of 'master_hash_recal.txt'!")
+    hash_recal_path_hash = sha256(hash_recal_path)
+    print("\t[+] SHA-256 hash: {}".format(hash_recal_path_hash))
+    print("[*] Calculating the hash of 'master_hash_decrypted.txt!'")
+    hash_decrypted_path_hash = sha256(HASHPATHDEC)
+    print("\t[+] SHA-256 hash: {}".format(hash_decrypted_path_hash))
+
+    if hash_recal_path_hash != hash_decrypted_path_hash:
+        print(print_red("[!] The hashes does not match! The file in the 'data' or 'HTMLReport' might be potentially tampered!"))
+    else:
+        print(print_green("[!] The hashes matches! The files in the 'data' or 'HTMLReport' are forensically sound!"))
+
+
+def run(hash_path):
     """"
     Runs the zehash module.
     :param: None
     :return: None
     """
-    hash_files()
-
-
-if __name__ == "__main__":
-    run()
+    hash_files(HASHPATH)

@@ -1,16 +1,14 @@
-from json2html import *
 import dominate
+import json
+from json2html import *
 from dominate.tags import *
 from dominate.util import raw
-from pathlib import Path
-import glob
-import os
-from main import return_excluded, return_included, return_post
-import json
+from main import *
 from datetime import datetime
-from coloroma_colours import *
 
-ROOT = str(Path(__file__).parent.parent)
+
+# Global Variables
+ROOT = os.getcwd()
 
 
 def get_datetime():
@@ -518,7 +516,3 @@ def run():
     """
     html_template()
     homepage()
-
-
-if __name__ == "__main__":
-    run()

@@ -1,9 +1,10 @@
-from winreg import *
 import wmi
 import json
-from pathlib import Path
-from main import get_project_root
+from winreg import *
+from main import *
 
+
+# Global Variables
 ROOT = str(get_project_root())
 
 
@@ -139,7 +140,3 @@ def run():
     get_system_env_var()
     get_start_up_apps()
     get_prev_ran_prog()
-
-
-if __name__ == "__main__":
-    run()

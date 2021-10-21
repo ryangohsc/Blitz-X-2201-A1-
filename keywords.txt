@@ -1,3 +1,6 @@
-SIT
-ICT
-lab
+docx
+txt
+pptx
+xlsx
+D:
+E:

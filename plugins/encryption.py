@@ -1,24 +1,41 @@
-import hashlib
-import fnmatch
-import os
 import sys
+import os
+import fnmatch
+import hashlib
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
-from main import cls, print_banner
-from coloroma_colours import *
+from colorama import init, Fore, Style
+
 
 # Global variables
 BUFFER_SIZE = 1024 * 1024
+init(convert=True)
+
+
+def print_green(text):
+    """"
+    Prints a sentence in the color green.
+    :param: text
+    :return: Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+    """
+    return Fore.GREEN + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+
+
+def print_red(text):
+    """"
+    Prints a sentence in the color red.
+    :param: text
+    :return: Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
+    """
+    return Fore.RED + Style.BRIGHT + text + Style.NORMAL + Fore.WHITE
 
 
 def export_pvt_key(pvt_key, filename, password):
     """"
-    Desc   :    Exports the private key to the file system.
-
-    Params :    pvt_key -
-                file_name -
-                password -
+    Exports the private key to the file system.
+    :param: pvt_key, filename, password
+    :return: None
     """
     with open(filename, "wb") as file:
         file.write(pvt_key.exportKey('PEM', password))
@@ -27,10 +44,9 @@ def export_pvt_key(pvt_key, filename, password):
 
 def export_pub_key(public_key1, filename):
     """"
-    Desc   :    Exports the public key to the file system.
-
-    Params :    public_key1 -
-                file_name -
+    Exports the public key to the file system.
+    :param: public_key1, filename
+    :return: None
     """
     with open(filename, "wb") as file:
         file.write(public_key1.exportKey('PEM'))
@@ -39,13 +55,17 @@ def export_pub_key(public_key1, filename):
 
 def generate_rsa_key():
     """"
-    Desc   :    Generates a 2048-bit RSA key.
-
-    Params :    None.
+    Generates a 2048-bit AES key and exports it to the file system.
+    :param: None
+    :return: None
     """
     keypair = RSA.generate(2048)
     public_key = keypair.publickey()
+
+    # Prompt the user to enter a password for to encrypt the private key
     password = input("[+] Enter a password to encrypt the private key: ")
+
+    # Export the public and private key to the file system.
     export_pub_key(public_key, 'public_key.pem')
     export_pvt_key(keypair, 'private_key.pem', password)
     print(print_green("[!] RSA key successfully generated!"))
@@ -53,13 +73,16 @@ def generate_rsa_key():
 
 def locate_public_key():
     """"
-    Desc   :    Locates the presence of a public key on the file system.
-
-    Params :    None.
+    Locates the presence of a public key on the file system.
+    :param: None
+    :return: "public_key.pem"
     """
+    # Searches the file system for the presence of a public key.
     pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if len(pem_file) == 0:
         generate_rsa_key()
+
+    # Searches the file system for the presence of a public key again.
     pem_file = fnmatch.filter(os.listdir(os.getcwd()), "*pem")
     if "public_key.pem" not in pem_file:
         print(print_red("[!] Error! Ensure that public key file is named as 'public_key.pem'"))
@@ -69,9 +92,9 @@ def locate_public_key():
 
 def import_pub_key(pub_key_path):
     """"
-    Desc   :    Locates the presence of a public key on the file system.
-
-    Params :    pub_key_path - Path of the public key on the file system.
+    Imports a public key from the file system.
+    :param: pub_key_path
+    :return: None or recipient_key
     """
     try:
         recipient_key = RSA.import_key(open(pub_key_path).read())
@@ -84,13 +107,13 @@ def import_pub_key(pub_key_path):
 
 def generate_sha256_hash(filename):
     """"
-    Desc   :    Generates a sha256 hash of a file.
-
-    Params :    filename - The file to be hashed.
+    Generates a sha256 hash of a file.
+    :param: filename
+    :return: sha256_hash
     """
     sha256_hash = hashlib.sha256()
     with open(filename, "rb") as f:
-        # Read and update hash string value in blocks of 4K
+        # Read and update hash string value in blocks of 4K.
         for byte_block in iter(lambda: f.read(4096), b""):
             sha256_hash.update(byte_block)
         sha256_hash = sha256_hash.hexdigest()
@@ -99,9 +122,9 @@ def generate_sha256_hash(filename):
 
 def encrypt_masterhash(pub_key_path):
     """"
-    Desc   :    Encrypts the master hash file using AES.
-
-    Params :    pub_key_path - The path of the public key on the file system.
+    Encrypts the master hash file using AES.
+    :param: pub_key_path
+    :return: None
     """
     # Import the public key
     public_key = RSA.import_key(open(pub_key_path).read())
@@ -135,14 +158,14 @@ def encrypt_masterhash(pub_key_path):
 
     tag = aes_cipher.digest()  # Signal to the cipher that we are done and get the tag
     file_out.write(tag)
-    print(print_green("[!] Master hash file successfully encrypted!"))
+    print(print_green("[!] Master hashfile successfully encrypted into '{}'!".format(output_filename)))
 
     # Generate the SHA256 hash of the masterhash file
     sha256_hash = generate_sha256_hash(input_filename)
     rsa_cipher = PKCS1_OAEP.new(public_key)
     encrypted_hash = rsa_cipher.encrypt(sha256_hash.encode())
     file_hash_out.write(encrypted_hash)
-    print(print_green("[!] Master hashfile's hash successfully encrypted!"))
+    print(print_green("[!] Master hashfile's hash successfully encrypted into '{}'!".format(output_hash_filename)))
 
     # Close file handles
     file_in.close()
@@ -152,29 +175,43 @@ def encrypt_masterhash(pub_key_path):
 
     # Remove the original master hash txt file
     os.remove(input_filename)
-    return
 
 
 def decrypt_masterhash(pvt_key_path):
     """"
-    Desc   :    Decrypts the master hash file using AES.
-
-    Params :    pvt_key_path - The path of the private key on the file system.
+    Decrypts the master hash file using AES and compares it with the decrypted hash obtained from master_hash.bin.
+    :param: pvt_key_path
+    :return: None
     """
     # Get the file handles
     input_filename = 'master_hash.bin'
     input_hash_filename = 'master_hash_sha256.bin'
     input_aes_filename = 'aes.bin'
     output_filename = 'master_hash_decrypted.txt'
-    file_in = open(input_filename, 'rb')
-    file_hash_in = open(input_hash_filename, 'rb')
-    file_key_in = open(input_aes_filename, 'rb')
+
+    try:
+        file_in = open(input_filename, 'rb')
+    except FileNotFoundError:
+        print(print_red("[!] master_hash.bin not found!"))
+        exit(-1)
+
+    try:
+        file_hash_in = open(input_hash_filename, 'rb')
+    except FileNotFoundError:
+        print("[!] master_hash_sha256.bin not found!")
+        exit(-1)
+
+    try:
+        file_key_in = open(input_aes_filename, 'rb')
+    except FileNotFoundError:
+        print("[!] aes.bin not found!")
+        exit(-1)
+
     file_out = open(output_filename, 'wb')
 
     # Import the private key
-    password = input(print_yellow("[+] Enter passphrase: "))
-    cls()
-    print_banner()
+    password = input("[+] Enter passphrase: ")
+
     try:
         pvt_key = RSA.import_key(open(pvt_key_path).read(), passphrase=password)
     except FileNotFoundError:
@@ -192,13 +229,15 @@ def decrypt_masterhash(pvt_key_path):
     aes_cipher = AES.new(dec_aes_key, AES.MODE_GCM, nonce=nonce)  # Create a cipher object to encrypt data
 
     # Decrypt the encrypted hashfile
+    print("[*] Decrypting '{}'".format(input_hash_filename))
     enc_hash = file_hash_in.read()
     dec_hash = rsa_cipher.decrypt(enc_hash).decode()
+    print("\t[+] Decrypted hash obtained: {}".format(dec_hash))
 
     # Decrypt the data
+    print("[*] Decrypting '{}'".format(input_filename))
     file_in_size = os.path.getsize(input_filename)
     encrypted_data_size = file_in_size - 16 - 16
-
     for _ in range(int(encrypted_data_size / BUFFER_SIZE)):
         data = file_in.read(BUFFER_SIZE)
         decrypted_data = aes_cipher.decrypt(data)
@@ -210,6 +249,7 @@ def decrypt_masterhash(pvt_key_path):
 
     # Generate the SHA256 hash of the masterhash file
     sha256_hash = generate_sha256_hash(output_filename)
+    print("\t[+] SHA-256 hash of master_hash_decrypted.txt: {}".format(sha256_hash))
 
     # Close file handles
     file_in.close()
@@ -221,9 +261,7 @@ def decrypt_masterhash(pvt_key_path):
     bin_file = fnmatch.filter(os.listdir(os.getcwd()), "*bin")
     for item in bin_file:
         os.remove(item)
-    print(dec_hash)
-    print(sha256_hash)
     if dec_hash == sha256_hash:
-        print(print_red("[!] The hash matches! The file has not been tampered with!"))
+        print(print_green("[!] The hashes matches! The file has not been tampered with!"))
     else:
-        print(print_red("[!] The hash does not match! The file might be potentially tampered!"))
+        print(print_red("[!] The hashes does not match! The file might be potentially tampered!"))
