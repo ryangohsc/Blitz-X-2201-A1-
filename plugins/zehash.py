@@ -204,9 +204,9 @@ def comparison(hash_recal_path):
     print("\t[+] SHA-256 hash: {}".format(hash_decrypted_path_hash))
 
     if hash_recal_path_hash != hash_decrypted_path_hash:
-        print(print_red("[!] The hashes does not match! The file in the 'data' or 'HTMLReport' might be potentially tampered!"))
+        print(print_red("[!] The hashes does not match! The files in the 'data' or 'HTMLReport' might be potentially tampered!"))
     else:
-        print(print_green("[!] The hashes matches! The files in the 'data' or 'HTMLReport' are forensically sound!"))
+        print(print_green("[!] The hashes matches! The files in the 'data' and 'HTMLReport' are forensically sound!"))
 
 
 def run(hash_path):

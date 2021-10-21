@@ -262,6 +262,6 @@ def decrypt_masterhash(pvt_key_path):
     for item in bin_file:
         os.remove(item)
     if dec_hash == sha256_hash:
-        print(print_green("[!] The hashes matches! The file has not been tampered with!"))
+        print(print_green("[!] The hashes matches! The '{}' has not been tampered with!".format(input_filename)))
     else:
-        print(print_red("[!] The hashes does not match! The file might be potentially tampered!"))
+        print(print_red("[!] The hashes does not match! The '{}' might be potentially tampered!".format(input_filename)))

@@ -214,7 +214,7 @@ def execute():
         print_banner()
         print("-" * 50)
         decrypt_masterhash(args.keydec)
-        print("\n[*] Recalculating the hashes for all data and report files and compiling them into 'master_hash_recal.txt!'")
+        print("\n[*] Recalculating the hashes for all files in the 'data' and 'HTMLReport' folders and compiling them into 'master_hash_recal.txt!'")
         hash_files(HASH_RECAL)
         comparison(HASH_RECAL)
         sys.exit(0)
