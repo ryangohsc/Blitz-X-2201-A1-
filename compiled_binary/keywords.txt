@@ -1,6 +1,0 @@
-docx
-txt
-pptx
-xlsx
-D:
-E:
