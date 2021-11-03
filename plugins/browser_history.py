@@ -188,7 +188,7 @@ def run():
     """
     # Get web browser artefacts related to chrome
     parse_history(CHROME_HISTORY_TITLE, CHROME_HISTORY_DESC, CHROME_HISTORY_OUTFILE, "chrome")
-    # parse_cookies(CHROME_COOKIE_TITLE, CHROME_COOKIE_DESC, CHROME_COOKIE_OUTFILE, "chrome")
+    parse_cookies(CHROME_COOKIE_TITLE, CHROME_COOKIE_DESC, CHROME_COOKIE_OUTFILE, "chrome")
     parse_bookmarks(CHROME_BOOKMARKS_TITLE, CHROME_BOOKMARKS_DESC, CHROME_BOOKMARKS_OUTFILE, "chrome")
 
     # Get web browser artefacts related to edge
